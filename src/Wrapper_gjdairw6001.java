@@ -119,7 +119,7 @@ public class Wrapper_gjdairw6001 implements QunarCrawler{
 		  };
 		     post.setRequestBody(pairs);
 		    int statuscode = httpClient.executeMethod(post);
-		    System.out.println("====2======done"+statuscode);
+		    System.out.println("====2======done");
 			if(statuscode>=400){
 				return "StatusError"+statuscode;
 			}
@@ -151,7 +151,7 @@ public class Wrapper_gjdairw6001 implements QunarCrawler{
 				get.addRequestHeader("Referer", url);
 				get.addRequestHeader("Content-Type","text/html;charset=UTF-8"); 
 				httpClient.executeMethod(get);
-			    System.out.println("====3======done"+statuscode);
+			    System.out.println("====3======done");
 				return get.getResponseBodyAsString();
 		      }catch (Exception e) {
 					e.printStackTrace();

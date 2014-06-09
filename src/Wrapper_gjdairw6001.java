@@ -44,6 +44,7 @@ public class Wrapper_gjdairw6001 implements QunarCrawler{
 				
 		Wrapper_gjdairw6001 instance = new Wrapper_gjdairw6001();
 		
+		
 		FlightSearchParam p =new FlightSearchParam();
 		p.setWrapperid("gjdairw6001");
 		p.setDep("VKO");
@@ -94,6 +95,7 @@ public class Wrapper_gjdairw6001 implements QunarCrawler{
 		bookingInfo.setInputs(map);		
 		bookingResult.setData(bookingInfo);
 		bookingResult.setRet(true);
+	System.out.println("====1======done");
 		return bookingResult;
 	}
 
@@ -117,6 +119,7 @@ public class Wrapper_gjdairw6001 implements QunarCrawler{
 		  };
 		     post.setRequestBody(pairs);
 		    int statuscode = httpClient.executeMethod(post);
+		    System.out.println("====2======done"+statuscode);
 			if(statuscode>=400){
 				return "StatusError"+statuscode;
 			}
@@ -148,6 +151,7 @@ public class Wrapper_gjdairw6001 implements QunarCrawler{
 				get.addRequestHeader("Referer", url);
 				get.addRequestHeader("Content-Type","text/html;charset=UTF-8"); 
 				httpClient.executeMethod(get);
+			    System.out.println("====3======done"+statuscode);
 				return get.getResponseBodyAsString();
 		      }catch (Exception e) {
 					e.printStackTrace();
@@ -188,6 +192,7 @@ public class Wrapper_gjdairw6001 implements QunarCrawler{
 			result.setStatus(Constants.CONNECTION_FAIL);
 			return result;		
 		}
+	    System.out.println("====4======done");
 		try {
 			List<OneWayFlightInfo> flightList = new ArrayList<OneWayFlightInfo>();
 			String[] results = html
@@ -245,6 +250,7 @@ public class Wrapper_gjdairw6001 implements QunarCrawler{
 			result.setRet(true);
 			result.setStatus(Constants.SUCCESS);
 			result.setData(flightList);
+		    System.out.println("====5======done");
 			return result;
 		} catch (Exception e) {
 			e.printStackTrace();

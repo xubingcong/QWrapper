@@ -95,7 +95,6 @@ public class Wrapper_gjdairw6001 implements QunarCrawler{
 		bookingInfo.setInputs(map);		
 		bookingResult.setData(bookingInfo);
 		bookingResult.setRet(true);
-	System.out.println("====1======done");
 		return bookingResult;
 	}
 
@@ -119,7 +118,6 @@ public class Wrapper_gjdairw6001 implements QunarCrawler{
 		  };
 		     post.setRequestBody(pairs);
 		    int statuscode = httpClient.executeMethod(post);
-		    System.out.println("====2======done");
 			if(statuscode>=400){
 				return "StatusError"+statuscode;
 			}
@@ -151,7 +149,6 @@ public class Wrapper_gjdairw6001 implements QunarCrawler{
 				get.addRequestHeader("Referer", url);
 				get.addRequestHeader("Content-Type","text/html;charset=UTF-8"); 
 				httpClient.executeMethod(get);
-			    System.out.println("====3======done");
 				return get.getResponseBodyAsString();
 		      }catch (Exception e) {
 					e.printStackTrace();
@@ -192,7 +189,6 @@ public class Wrapper_gjdairw6001 implements QunarCrawler{
 			result.setStatus(Constants.CONNECTION_FAIL);
 			return result;		
 		}
-	    System.out.println("====4======done");
 		try {
 			List<OneWayFlightInfo> flightList = new ArrayList<OneWayFlightInfo>();
 			String[] results = html
@@ -215,7 +211,7 @@ public class Wrapper_gjdairw6001 implements QunarCrawler{
 								"requiredError").trim();
 				// 截取出航班信息
 				String[] array = span.split("~");
-				String code = array[7] + " " + array[8];
+				String code = array[7]+ array[8];
 				String depDate = array[12];
 				String arrDate = array[14];
 				// 截取出票价信息
@@ -250,7 +246,6 @@ public class Wrapper_gjdairw6001 implements QunarCrawler{
 			result.setRet(true);
 			result.setStatus(Constants.SUCCESS);
 			result.setData(flightList);
-		    System.out.println("====5======done");
 			return result;
 		} catch (Exception e) {
 			e.printStackTrace();

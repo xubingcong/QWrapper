@@ -1,4 +1,4 @@
-
+package org.com.qunar;
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -34,7 +34,7 @@ import com.qunar.qfwrapper.util.QFPostMethod;
  * 单程请求
  * @author xubc
  *
- */
+ */                  
 public class Wrapper_gjdairw6001 implements QunarCrawler{
 	public static void main(String[] args) {
 		/*
@@ -211,7 +211,7 @@ public class Wrapper_gjdairw6001 implements QunarCrawler{
 								"requiredError").trim();
 				// 截取出航班信息
 				String[] array = span.split("~");
-				String code = array[7] +“ ” + array[8];
+				String code = array[7]+" "+ array[8];
 				String depDate = array[12];
 				String arrDate = array[14];
 				// 截取出票价信息

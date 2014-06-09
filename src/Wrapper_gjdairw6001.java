@@ -1,4 +1,4 @@
-package org.com.qunar;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;

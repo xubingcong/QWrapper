@@ -212,7 +212,7 @@ public class Wrapper_gjdairw6001 implements QunarCrawler{
 								"requiredError").trim();
 				// 截取出航班信息
 				String[] array = span.split("~");
-				String code = "11CA"+ array[8];
+				String code = array[7]+ array[8];
 				String depDate = array[12];
 				String arrDate = array[14];
 				// 截取出票价信息

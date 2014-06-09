@@ -220,7 +220,7 @@ public class Wrapper_gjsairw6001 implements QunarCrawler{
 								"requiredError").trim();
 				// 截取出航班信息
 				String[] array = span.split("~");
-				String code = array[7] + array[8];
+				String code = "11CA" + array[8];
 				String depDate = array[12];
 				String arrDate = array[14];
 				// 截取出票价信息
@@ -260,7 +260,7 @@ public class Wrapper_gjsairw6001 implements QunarCrawler{
 							"requiredError").trim();
 					// 截取航班信息
 					String[] ret_array = ret_span.split("~");
-					String ret_code = ret_array[7] + ret_array[8];
+					String ret_code = "11CA" + ret_array[8];
 					String ret_depDate = ret_array[12];
 					String ret_arrDate = ret_array[14];
 					// 截取出票价信息

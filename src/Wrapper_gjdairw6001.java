@@ -235,7 +235,7 @@ public class Wrapper_gjdairw6001 implements QunarCrawler{
 				segs.add(seg);
 				flightDetail.setFlightno(flightNoList);
 				flightDetail.setMonetaryunit(currencyCode);
-				flightDetail.setPrice(Math.round(Double.parseDouble(price.substring(1))));
+				flightDetail.setPrice(Double.parseDouble(price.substring(1)));
 				flightDetail.setDepcity(param.getDep());
 				flightDetail.setArrcity(param.getArr());
 				flightDetail.setWrapperid(param.getWrapperid());

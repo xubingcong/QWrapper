@@ -1,3 +1,4 @@
+
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -48,10 +49,7 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 		 * 测试条件
 		 * KBP-LJU 2014-07-10 2014-07-27 LWO-LJU 2014-08-16 2014-08-20 LJU-TXL 2014-08-16 2014-08-27
 	     */
-				
 		Wrapper_gjsairjp001 instance = new Wrapper_gjsairjp001();
-		
-		
 		FlightSearchParam p =new FlightSearchParam();
 		p.setWrapperid("gjdairjp001");
 		p.setDep("KBP");
@@ -163,8 +161,7 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 				get.addRequestHeader("Referer", url);
 				get.addRequestHeader("Content-Type","text/html;charset=UTF-8"); 
 				httpClient.executeMethod(get);
-				String html=get.getResponseBodyAsString();
-			    return html;
+			    return get.getResponseBodyAsString();
 		      }catch (Exception e) {
 					e.printStackTrace();
 				}finally{
@@ -267,7 +264,7 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
                     }
     				flightDetail.setFlightno(flightNoList);
     				flightDetail.setMonetaryunit("EUR");
-    				flightDetail.setPrice(Math.round(Double.parseDouble(entry.getValue())));
+    				flightDetail.setPrice(Double.parseDouble(entry.getValue()));
     				flightDetail.setDepcity(param.getDep());
     				flightDetail.setArrcity(param.getArr());
     				flightDetail.setWrapperid(param.getWrapperid());
@@ -278,7 +275,7 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
     			 	 String[] re_results = re_d_html.split("segment");
     			 	 List<FlightSegement> re_segs = new ArrayList<FlightSegement>();
     			 	 List<String> retflightno = new ArrayList<String>();
-    		           for(int i=1;i<re_results.length;i++){ 
+    		         for(int i=1;i<re_results.length;i++){ 
                        	FlightSegement re_seg = new FlightSegement();
    			    	 //出发地
                        	String departure_div=StringUtils.substringBetween(re_results[i],"departure", " <br />");
@@ -309,7 +306,7 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
                        	re_seg.setFlightno(airline_Code+flightNumber);
                        	re_segs.add(re_seg);
                        	retflightno.add(airline_Code+flightNumber);
-                       }
+                      }
     				
     				//baseFlight.setOutboundPrice(Math.round(Double.parseDouble(price.substring(1))));
 					baseFlight.setRetinfo(re_segs);
@@ -332,7 +329,7 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 		}
 	}
 	/**
-	 * 遍历listRecos json对象 获取低价票的map(recosID,price)
+	 * 遍历listRecos json对象 获取低价票的map(o_recosID|i_recosID,price)
 	 * @param String strJson,String low_price
 	 * @return Map<String,String>  
 	 */

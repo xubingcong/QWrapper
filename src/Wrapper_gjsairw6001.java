@@ -242,7 +242,7 @@ public class Wrapper_gjsairw6001 implements QunarCrawler{
 				segs.add(seg);
 				flightDetail.setFlightno(flightNoList);
 				flightDetail.setMonetaryunit(currencyCode);
-				flightDetail.setPrice(Math.round(Double.parseDouble(price.substring(1))));
+				
 				flightDetail.setDepcity(param.getDep());
 				flightDetail.setArrcity(param.getArr());
 				flightDetail.setWrapperid(param.getWrapperid());
@@ -280,12 +280,13 @@ public class Wrapper_gjsairw6001 implements QunarCrawler{
 					List<String> retflightno =new ArrayList<String>();
 					retflightno.add(ret_code.substring(2));
 					baseFlight.setInfo(segs);
+					flightDetail.setPrice(Double.parseDouble(price.substring(1))+Double.parseDouble(returnedPrice.substring(1)));
 					baseFlight.setDetail(flightDetail);
-					baseFlight.setOutboundPrice(Math.round(Double.parseDouble(price.substring(1))));
+					baseFlight.setOutboundPrice(Double.parseDouble(price.substring(1)));
 					baseFlight.setRetinfo(re_segs);
 					baseFlight.setRetdepdate(String2Date(param.getRetDate()));
 					baseFlight.setRetflightno(retflightno);
-				    baseFlight.setReturnedPrice(Math.round(Double.parseDouble(returnedPrice.substring(1))));
+				    baseFlight.setReturnedPrice(Double.parseDouble(returnedPrice.substring(1)));
 				    flightList.add(baseFlight);
 			  }
 		    }

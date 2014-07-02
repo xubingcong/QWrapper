@@ -94,7 +94,7 @@ public class Wrapper_gjsairmu005 implements QunarCrawler{
 		map.put("depDate", arg0.getDepDate());
 		map.put("depRtDate", arg0.getRetDate());
 		map.put("depRtDate", "");
-		map.put("submit", "Book+Now");
+	//	map.put("submit", "Book+Now");
 		bookingInfo.setInputs(map);		
 		bookingResult.setData(bookingInfo);
 		bookingResult.setRet(true);

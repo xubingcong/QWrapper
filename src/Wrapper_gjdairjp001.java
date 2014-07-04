@@ -118,6 +118,7 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 			 httpClient.getParams().setCookiePolicy(
 						CookiePolicy.BROWSER_COMPATIBILITY);
 			post=new QFPostMethod("https://www.adria.si/en/submit_reservations//");
+			post.setFollowRedirects(false);
 	     	NameValuePair[] pairs = new NameValuePair[]{
 			new NameValuePair("trip-type", "O"),
 			new NameValuePair("from-airport", param.getDep()),

@@ -243,13 +243,15 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 			    	 //出发时间
                     	String departure_date_div=StringUtils.substringBetween(results[i],"departure date", " <br />");
                     	String departure_date=StringUtils.substringBetween(departure_date_div,"value=\"", "\"");
-                    	seg.setDepDate(departure_date.substring(0, 10));
-                    	seg.setDeptime(departure_date.substring(11));
+                    	String strDeparture_date=String2Date_yyyy_MM_dd(departure_date);
+                    	seg.setDepDate(strDeparture_date.substring(0, 10));
+                    	seg.setDeptime(strDeparture_date.substring(11));
 			    	 //到达时间
                     	String arrival_date_div=StringUtils.substringBetween(results[i],"arrival date", " <br />");
                     	String arrival_date=StringUtils.substringBetween(arrival_date_div,"value=\"", "\"");
-                    	seg.setArrDate(arrival_date.substring(0, 10));
-                    	seg.setArrtime(arrival_date.substring(11));
+                    	String strArrival_date=String2Date_yyyy_MM_dd(arrival_date);
+                    	seg.setArrDate(strArrival_date.substring(0, 10));
+                    	seg.setArrtime(strArrival_date.substring(11));
 		
 			    	 //航空公司编码
                     	String airline_Code_div=StringUtils.substringBetween(results[i],"airline Code", " <br />");

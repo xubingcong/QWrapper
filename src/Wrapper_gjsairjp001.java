@@ -1,4 +1,4 @@
-
+package org.com.qunar;
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -15,6 +15,7 @@ import java.util.Map;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -70,7 +71,6 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 		{
 			List<RoundTripFlightInfo> flightList = (List<RoundTripFlightInfo>) result.getData();
 			for (RoundTripFlightInfo in : flightList){
-				System.out.println("------------" + in.getDetail());
 				System.out.println("************" + in.getInfo().toString());
 				System.out.println("++++++++++++" + in.getRetinfo().toString());
 			}
@@ -114,6 +114,8 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 		QFPostMethod post = null;
 		try {	
 			QFHttpClient httpClient = new QFHttpClient(param, false);
+			 httpClient.getParams().setCookiePolicy(
+						CookiePolicy.BROWSER_COMPATIBILITY);
 	     	post=new QFPostMethod("https://www.adria.si/en/submit_reservations//");
 	     	NameValuePair[] pairs = new NameValuePair[]{
 			new NameValuePair("trip-type", "R"),
@@ -236,7 +238,11 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
                     	String departure_div=StringUtils.substringBetween(results[i],"departure", " <br />");
                     	String departure=StringUtils.substringBetween(departure_div,"value=\"", "\"");
                     	seg.setDepairport(departure);
-                                 //出发时间
+			    	 //到达地
+                     	String arrival_div=StringUtils.substringBetween(results[i],"arrival", " <br />");
+                    	String arrival=StringUtils.substringBetween(arrival_div,"value=\"", "\"");
+                    	seg.setArrairport(arrival);
+			    	 //出发时间
                     	String departure_date_div=StringUtils.substringBetween(results[i],"departure date", " <br />");
                     	String departure_date=StringUtils.substringBetween(departure_date_div,"value=\"", "\"");
                     	String strDeparture_date =String2Date_yyyy_MM_dd(departure_date);
@@ -248,16 +254,18 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
                     	String strArrival_date=String2Date_yyyy_MM_dd(arrival_date);
                     	seg.setArrDate(strArrival_date.substring(0, 10));
                     	seg.setArrtime(strArrival_date.substring(11));
+		
 			    	 //航空公司编码
                     	String airline_Code_div=StringUtils.substringBetween(results[i],"airline Code", " <br />");
                     	String airline_Code=StringUtils.substringBetween(airline_Code_div,"value=\"", "\"");
                     	seg.setCompany(airline_Code);
-                    	segs.add(seg);
            	    	 //航班号
                     	String flightNumber_div=StringUtils.substringBetween(results[i],"flightNumber", " <br />");
                     	String flightNumber=StringUtils.substringBetween(flightNumber_div,"value=\"", "\"");
                     	seg.setFlightno(airline_Code+flightNumber);
                     	flightNoList.add(airline_Code+flightNumber);
+                    
+                    	segs.add(seg);
                     }
     				flightDetail.setFlightno(flightNoList);
     				flightDetail.setMonetaryunit("EUR");
@@ -282,10 +290,10 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
                         	String arrival_div=StringUtils.substringBetween(re_results[i],"arrival", " <br />");
                        	String arrival=StringUtils.substringBetween(arrival_div,"value=\"", "\"");
                        	re_seg.setArrairport(arrival);
-                                //出发时间
+   			    	 //出发时间
                        	String departure_date_div=StringUtils.substringBetween(re_results[i],"departure date", " <br />");
                        	String departure_date=StringUtils.substringBetween(departure_date_div,"value=\"", "\"");
-                        String strDeparture_date1 = String2Date_yyyy_MM_dd(departure_date);
+                        String strDeparture_date1 =	String2Date_yyyy_MM_dd(departure_date);
                        	re_seg.setDepDate(strDeparture_date1.substring(0, 10));
                        	re_seg.setDeptime(strDeparture_date1.substring(11));
    			    	 //到达时间

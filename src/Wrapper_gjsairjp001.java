@@ -236,21 +236,18 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
                     	String departure_div=StringUtils.substringBetween(results[i],"departure", " <br />");
                     	String departure=StringUtils.substringBetween(departure_div,"value=\"", "\"");
                     	seg.setDepairport(departure);
-			    	 //到达地
-                     	String arrival_div=StringUtils.substringBetween(results[i],"arrival", " <br />");
-                    	String arrival=StringUtils.substringBetween(arrival_div,"value=\"", "\"");
-                    	seg.setArrairport(arrival);
-			    	 //出发时间
+                                 //出发时间
                     	String departure_date_div=StringUtils.substringBetween(results[i],"departure date", " <br />");
                     	String departure_date=StringUtils.substringBetween(departure_date_div,"value=\"", "\"");
-                    	seg.setDepDate(departure_date.substring(0, 10));
-                    	seg.setDeptime(departure_date.substring(11));
+                    	String strDeparture_date =String2Date_yyyy_MM_dd(departure_date);
+                    	seg.setDepDate(strDeparture_date.substring(0, 10));
+                    	seg.setDeptime(strDeparture_date.substring(11));
 			    	 //到达时间
                     	String arrival_date_div=StringUtils.substringBetween(results[i],"arrival date", " <br />");
                     	String arrival_date=StringUtils.substringBetween(arrival_date_div,"value=\"", "\"");
-                    	seg.setArrDate(arrival_date.substring(0, 10));
-                    	seg.setArrtime(arrival_date.substring(11));
-		
+                    	String strArrival_date=String2Date_yyyy_MM_dd(arrival_date);
+                    	seg.setArrDate(strArrival_date.substring(0, 10));
+                    	seg.setArrtime(strArrival_date.substring(11));
 			    	 //航空公司编码
                     	String airline_Code_div=StringUtils.substringBetween(results[i],"airline Code", " <br />");
                     	String airline_Code=StringUtils.substringBetween(airline_Code_div,"value=\"", "\"");
@@ -285,16 +282,18 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
                         	String arrival_div=StringUtils.substringBetween(re_results[i],"arrival", " <br />");
                        	String arrival=StringUtils.substringBetween(arrival_div,"value=\"", "\"");
                        	re_seg.setArrairport(arrival);
-   			    	 //出发时间
+                                //出发时间
                        	String departure_date_div=StringUtils.substringBetween(re_results[i],"departure date", " <br />");
                        	String departure_date=StringUtils.substringBetween(departure_date_div,"value=\"", "\"");
-                       	re_seg.setDepDate(departure_date.substring(0, 10));
-                       	re_seg.setDeptime(departure_date.substring(11));
+                        String strDeparture_date1 = String2Date_yyyy_MM_dd(departure_date);
+                       	re_seg.setDepDate(strDeparture_date1.substring(0, 10));
+                       	re_seg.setDeptime(strDeparture_date1.substring(11));
    			    	 //到达时间
                        	String arrival_date_div=StringUtils.substringBetween(re_results[i],"arrival date", " <br />");
                        	String arrival_date=StringUtils.substringBetween(arrival_date_div,"value=\"", "\"");
-                       	re_seg.setArrDate(arrival_date.substring(0, 10));
-                       	re_seg.setArrtime(arrival_date.substring(11));
+                       	String strArrival_date1=String2Date_yyyy_MM_dd(arrival_date);
+                       	re_seg.setArrDate(strArrival_date1.substring(0, 10));
+                       	re_seg.setArrtime(strArrival_date1.substring(11));
    		
    			    	 //航空公司编码
                        	String airline_Code_div=StringUtils.substringBetween(re_results[i],"airline Code", " <br />");

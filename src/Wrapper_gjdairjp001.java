@@ -1,4 +1,3 @@
-
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -12,12 +11,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -36,6 +37,7 @@ import com.qunar.qfwrapper.util.QFGetMethod;
 import com.qunar.qfwrapper.util.QFHttpClient;
 import com.qunar.qfwrapper.util.QFPostMethod;
 
+
 /**
  * 单程请求
  * @author xubc
@@ -50,10 +52,13 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 		 * KBP-LJU 2014-07-10 LWO-LJU 2014-08-16 LJU-TXL 2014-08-16
 		 * https://book.adria.si/plnext/adriaNext/Override.action?COMMERCIAL_FARE_FAMILY_1=ADRIA&B_LOCATION_1=KBP&E_LOCATION_1=LJU&B_DATE_1=201407100000&DATE_RANGE_VALUE_1=&DATE_RANGE_QUALIFIER_1=&TRIP_TYPE=O&TRAVELLER_TYPE_1=ADT&HAS_INFANT_1=FALSE&LANGUAGE=GB&SO_SITE_EXT_PSP_URL=https%3A%2F%2Fwww.adria.si%2Fen%2Fbooking-select-payment-type%2Fpayment%2F%2F&SO_SITE_EXT_PSPURL=https%3A%2F%2Fwww.adria.si%2Fen%2Fbooking-select-payment-type%2Fpayment%2F%2F&EMBEDDED_TRANSACTION=FlexPricerAvailability&DISPLAY_TYPE=1&PRICING_TYPE=I&SITE=BAUQBAUQ&SO_SITE_OFFICE_ID=LJUJP08AB&SO_SITE_QUEUE_CATEGORY=8C0&SO_SITE_QUEUE_OFFICE_ID=LJUJP08AB&SO_SITE_QUEUE_SUCCESS_ETKT=TRUE&SO_SITE_TRANSFER_TRAVPRICE=TRUE&SO_SITE_TRANSFER_ITINERARY=TRUE&SO_SITE_ALLOW_DATA_TRANS_EXT=TRUE&SO_SITE_DATA_TRANSFER_MODE=FINE&SO_SITE_DATA_TRANSFER=TRUE&REFRESH=0
 	     */
-				
+
+
 		Wrapper_gjdairjp001 instance = new Wrapper_gjdairjp001();
-		
-		
+
+
+
+
 		FlightSearchParam p =new FlightSearchParam();
 		p.setWrapperid("gjdairjp001");
 		p.setDep("KBP");
@@ -80,18 +85,21 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 		{
 			System.out.println(result.getStatus());
 		}
-			
+
+
 	}
 	@Override
 	public BookingResult getBookingInfo(FlightSearchParam param) {
-		
+
+
 		String bookingUrlPre = "https://www.adria.si/en/submit_reservations//";
 		BookingResult bookingResult = new BookingResult();
 		BookingInfo bookingInfo = new BookingInfo();
 		bookingInfo.setAction(bookingUrlPre);
 		bookingInfo.setMethod("post");
 		Map<String, String> map = new LinkedHashMap<String, String>();
-		
+
+
 		map.put("trip-type", "O");
 		map.put("from-airport",param.getDep());
 		map.put("to-airport", param.getArr());
@@ -108,6 +116,7 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 		bookingResult.setRet(true);
 		return bookingResult;
 	}
+
 
 	@Override
 	public String getHtml(FlightSearchParam param) {
@@ -133,6 +142,10 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 			new NameValuePair("flight-submit", "Find+flight"),
 		  };
 		     post.setRequestBody(pairs);
+		     String cookie = StringUtils.join(httpClient.getState()
+		    		 .getCookies(), "; ");
+		     post.addRequestHeader("Cookie", cookie);
+		     post.addRequestHeader("Referer", "https://www.adria.si/en");
 		    int statuscode = httpClient.executeMethod(post);
 			if(statuscode>=400){
 				return "StatusError"+statuscode;
@@ -155,15 +168,11 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 				} else {
 					return "";
 				}
-				String cookie = StringUtils.join(httpClient.getState()
-						.getCookies(), "; ");
+		
 				get = new QFGetMethod(url);
 				get.setFollowRedirects(false);
-				httpClient.getState().clearCookies();
 				get.addRequestHeader("Cookie", cookie);
-				get.addRequestHeader("X-Requested-With", "XMLHttpRequest");
-				get.addRequestHeader("Referer", url);
-				get.addRequestHeader("Content-Type","text/html;charset=UTF-8"); 
+				get.addRequestHeader("Referer", "https://www.adria.si/en");
 				httpClient.executeMethod(get);
 				String html=get.getResponseBodyAsString();
 			    return html;
@@ -177,6 +186,7 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 		    } else {
 				return post.getResponseBodyAsString();
 
+
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -187,6 +197,7 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 		}
 		return "Exception";
 	}
+
 
 	@Override
 	public  ProcessResultInfo process(String html, FlightSearchParam param) {
@@ -223,8 +234,10 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 		// 截取页面中的json串
 		String strJson=	org.apache.commons.lang.StringUtils.substringBetween(html, "new String('", "');");
 
+
 		map=getFlightMap(strJson,low_price);
-		
+
+
 		List<OneWayFlightInfo> flightList = new ArrayList<OneWayFlightInfo>();
 		for(Map.Entry<String, String> entry:map.entrySet()){
 	          String detail_html=getFlightDetail(html,entry.getKey());
@@ -245,17 +258,20 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
                      	String arrival_div=StringUtils.substringBetween(results[i],"arrival", " <br />");
                     	String arrival=StringUtils.substringBetween(arrival_div,"value=\"", "\"");
                     	seg.setArrairport(arrival);
-			    	 //出发时间
+   			    	 //出发时间
                     	String departure_date_div=StringUtils.substringBetween(results[i],"departure date", " <br />");
                     	String departure_date=StringUtils.substringBetween(departure_date_div,"value=\"", "\"");
-                    	seg.setDepDate(departure_date.substring(0, 10));
-                    	seg.setDeptime(departure_date.substring(11));
+                    	String strDeparture_date=String2Date_yyyy_MM_dd(departure_date);
+                    	seg.setDepDate(strDeparture_date.substring(0, 10));
+                    	seg.setDeptime(strDeparture_date.substring(11));
 			    	 //到达时间
                     	String arrival_date_div=StringUtils.substringBetween(results[i],"arrival date", " <br />");
                     	String arrival_date=StringUtils.substringBetween(arrival_date_div,"value=\"", "\"");
-                    	seg.setArrDate(arrival_date.substring(0, 10));
-                    	seg.setArrtime(arrival_date.substring(11));
-		
+                    	String strArrival_date=String2Date_yyyy_MM_dd(arrival_date);
+                    	seg.setArrDate(strArrival_date.substring(0, 10));
+                    	seg.setArrtime(strArrival_date.substring(11));
+
+
 			    	 //航空公司编码
                     	String airline_Code_div=StringUtils.substringBetween(results[i],"airline Code", " <br />");
                     	String airline_Code=StringUtils.substringBetween(airline_Code_div,"value=\"", "\"");
@@ -320,7 +336,8 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 						          map.put(flight_id, price);
 							}
 					    }
-						
+
+
 					  }
 					}
 				}
@@ -328,7 +345,8 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 		}
 		return map;
 	}
-	
+
+
 	/**
 	 * 根据json中的recosID：序号 获取航班detail info
 	 * @param String html,String recosID
@@ -338,6 +356,7 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 		FlightSearchParam param =new FlightSearchParam();
 		QFHttpClient httpClient = new QFHttpClient(param, false);
 		StringBuffer detail_url=new StringBuffer("https://book.adria.si");
+
 
 		String detail_from = StringUtils.substringBetween(html,
 				 "name=\"FlightDetailsPopUpForm\"", "</form>").trim();
@@ -383,8 +402,10 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 		}	
 		return "Exception";
 	}
-	
-	
+
+
+
+
 	/**
 	 * String 转 Date
 	 * @param strdate
@@ -423,5 +444,6 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 		}
 		return strDate;
 	 }
-	
+
+
 }

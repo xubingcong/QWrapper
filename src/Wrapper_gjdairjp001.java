@@ -1,3 +1,4 @@
+
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -14,6 +15,7 @@ import java.util.Map;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -113,7 +115,9 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 		QFPostMethod post = null;
 		try {	
 			QFHttpClient httpClient = new QFHttpClient(param, false);
-	     	post=new QFPostMethod("https://www.adria.si/en/submit_reservations//");
+			 httpClient.getParams().setCookiePolicy(
+						CookiePolicy.BROWSER_COMPATIBILITY);
+			post=new QFPostMethod("https://www.adria.si/en/submit_reservations//");
 	     	NameValuePair[] pairs = new NameValuePair[]{
 			new NameValuePair("trip-type", "O"),
 			new NameValuePair("from-airport", param.getDep()),
@@ -243,15 +247,13 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 			    	 //出发时间
                     	String departure_date_div=StringUtils.substringBetween(results[i],"departure date", " <br />");
                     	String departure_date=StringUtils.substringBetween(departure_date_div,"value=\"", "\"");
-                    	String strDeparture_date=String2Date_yyyy_MM_dd(departure_date);
-                    	seg.setDepDate(strDeparture_date.substring(0, 10));
-                    	seg.setDeptime(strDeparture_date.substring(11));
+                    	seg.setDepDate(departure_date.substring(0, 10));
+                    	seg.setDeptime(departure_date.substring(11));
 			    	 //到达时间
                     	String arrival_date_div=StringUtils.substringBetween(results[i],"arrival date", " <br />");
                     	String arrival_date=StringUtils.substringBetween(arrival_date_div,"value=\"", "\"");
-                    	String strArrival_date=String2Date_yyyy_MM_dd(arrival_date);
-                    	seg.setArrDate(strArrival_date.substring(0, 10));
-                    	seg.setArrtime(strArrival_date.substring(11));
+                    	seg.setArrDate(arrival_date.substring(0, 10));
+                    	seg.setArrtime(arrival_date.substring(11));
 		
 			    	 //航空公司编码
                     	String airline_Code_div=StringUtils.substringBetween(results[i],"airline Code", " <br />");
@@ -266,7 +268,7 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
                     }
     				flightDetail.setFlightno(flightNoList);
     				flightDetail.setMonetaryunit("EUR");
-    				flightDetail.setPrice(Double.parseDouble(entry.getValue()));
+    				flightDetail.setPrice(Math.round(Double.parseDouble(entry.getValue())));
     				flightDetail.setDepcity(param.getDep());
     				flightDetail.setArrcity(param.getArr());
     				flightDetail.setWrapperid(param.getWrapperid());

@@ -1,5 +1,5 @@
-import java.io.File;
-import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -11,19 +11,16 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.google.common.base.Charsets;
-import com.google.common.io.Files;
 import com.qunar.qfwrapper.bean.booking.BookingInfo;
 import com.qunar.qfwrapper.bean.booking.BookingResult;
 import com.qunar.qfwrapper.bean.search.FlightDetail;
@@ -38,6 +35,8 @@ import com.qunar.qfwrapper.util.QFHttpClient;
 import com.qunar.qfwrapper.util.QFPostMethod;
 
 
+
+
 /**
  * 单程请求
  * @author xubc
@@ -46,12 +45,15 @@ import com.qunar.qfwrapper.util.QFPostMethod;
  *
  */                  
 public class Wrapper_gjdairjp001 implements QunarCrawler{
+	private static Logger logger = LoggerFactory.getLogger(ExceptionMessage.class);
 	public static void main(String[] args) {
 		/*
 		 * 测试条件
 		 * KBP-LJU 2014-07-10 LWO-LJU 2014-08-16 LJU-TXL 2014-08-16
 		 * https://book.adria.si/plnext/adriaNext/Override.action?COMMERCIAL_FARE_FAMILY_1=ADRIA&B_LOCATION_1=KBP&E_LOCATION_1=LJU&B_DATE_1=201407100000&DATE_RANGE_VALUE_1=&DATE_RANGE_QUALIFIER_1=&TRIP_TYPE=O&TRAVELLER_TYPE_1=ADT&HAS_INFANT_1=FALSE&LANGUAGE=GB&SO_SITE_EXT_PSP_URL=https%3A%2F%2Fwww.adria.si%2Fen%2Fbooking-select-payment-type%2Fpayment%2F%2F&SO_SITE_EXT_PSPURL=https%3A%2F%2Fwww.adria.si%2Fen%2Fbooking-select-payment-type%2Fpayment%2F%2F&EMBEDDED_TRANSACTION=FlexPricerAvailability&DISPLAY_TYPE=1&PRICING_TYPE=I&SITE=BAUQBAUQ&SO_SITE_OFFICE_ID=LJUJP08AB&SO_SITE_QUEUE_CATEGORY=8C0&SO_SITE_QUEUE_OFFICE_ID=LJUJP08AB&SO_SITE_QUEUE_SUCCESS_ETKT=TRUE&SO_SITE_TRANSFER_TRAVPRICE=TRUE&SO_SITE_TRANSFER_ITINERARY=TRUE&SO_SITE_ALLOW_DATA_TRANS_EXT=TRUE&SO_SITE_DATA_TRANSFER_MODE=FINE&SO_SITE_DATA_TRANSFER=TRUE&REFRESH=0
 	     */
+
+
 
 
 		Wrapper_gjdairjp001 instance = new Wrapper_gjdairjp001();
@@ -87,9 +89,13 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 		}
 
 
+
+
 	}
 	@Override
 	public BookingResult getBookingInfo(FlightSearchParam param) {
+
+
 
 
 		String bookingUrlPre = "https://www.adria.si/en/submit_reservations//";
@@ -98,6 +104,8 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 		bookingInfo.setAction(bookingUrlPre);
 		bookingInfo.setMethod("post");
 		Map<String, String> map = new LinkedHashMap<String, String>();
+
+
 
 
 		map.put("trip-type", "O");
@@ -118,10 +126,13 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 	}
 
 
+
+
 	@Override
 	public String getHtml(FlightSearchParam param) {
 		QFGetMethod get = null;	
 		QFPostMethod post = null;
+		String str="";
 		try {	
 			QFHttpClient httpClient = new QFHttpClient(param, false);
 			 httpClient.getParams().setCookiePolicy(
@@ -168,7 +179,8 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 				} else {
 					return "";
 				}
-		
+
+
 				get = new QFGetMethod(url);
 				get.setFollowRedirects(false);
 				get.addRequestHeader("Cookie", cookie);
@@ -177,7 +189,8 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 				String html=get.getResponseBodyAsString();
 			    return html;
 		      }catch (Exception e) {
-					e.printStackTrace();
+		    		str=e.getMessage();
+				
 				}finally{
 					if (null != get){
 						get.releaseConnection();
@@ -187,16 +200,20 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 				return post.getResponseBodyAsString();
 
 
+
+
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			str=e.getMessage();
 		}finally{
 			if (null != post){
 				post.releaseConnection();
 			}
 		}
-		return "Exception";
+		return str;
 	}
+
+
 
 
 	@Override
@@ -235,7 +252,11 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 		String strJson=	org.apache.commons.lang.StringUtils.substringBetween(html, "new String('", "');");
 
 
+
+
 		map=getFlightMap(strJson,low_price);
+
+
 
 
 		List<OneWayFlightInfo> flightList = new ArrayList<OneWayFlightInfo>();
@@ -270,6 +291,8 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
                     	String strArrival_date=String2Date_yyyy_MM_dd(arrival_date);
                     	seg.setArrDate(strArrival_date.substring(0, 10));
                     	seg.setArrtime(strArrival_date.substring(11));
+
+
 
 
 			    	 //航空公司编码
@@ -338,6 +361,8 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 					    }
 
 
+
+
 					  }
 					}
 				}
@@ -345,6 +370,8 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 		}
 		return map;
 	}
+
+
 
 
 	/**
@@ -356,6 +383,8 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 		FlightSearchParam param =new FlightSearchParam();
 		QFHttpClient httpClient = new QFHttpClient(param, false);
 		StringBuffer detail_url=new StringBuffer("https://book.adria.si");
+
+
 
 
 		String detail_from = StringUtils.substringBetween(html,
@@ -406,6 +435,10 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 
 
 
+
+
+
+
 	/**
 	 * String 转 Date
 	 * @param strdate
@@ -444,6 +477,29 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 		}
 		return strDate;
 	 }
-
-
+	
+	 class ExceptionMessage {
+		public static final String ERROR_INFO = "errorInfo";
+		private  Logger logger = LoggerFactory.getLogger(ExceptionMessage.class);
+		
+		public  String getMessage(Exception exception) {
+			StringWriter errMsg = null;
+			try {
+				errMsg = new StringWriter();
+				exception.printStackTrace(new PrintWriter(errMsg));
+				return errMsg.getBuffer().toString();
+			} finally {
+				if (errMsg != null)
+					try {
+						errMsg.close();
+					} catch (Exception e) {
+						logger.error(e.getMessage(), e);
+					} finally {
+						errMsg = null;
+					}
+			}
+		}
+		
+	}
 }
+

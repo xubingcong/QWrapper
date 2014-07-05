@@ -189,7 +189,7 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 				String html=get.getResponseBodyAsString();
 			    return html;
 		      }catch (Exception e) {
-		    		str=e.getMessage();
+		    				str=new  ExceptionMessage().getMessage(e) ;
 				
 				}finally{
 					if (null != get){
@@ -204,7 +204,7 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 
 			}
 		} catch (Exception e) {
-			str=e.getMessage();
+				str=new  ExceptionMessage().getMessage(e) ;
 		}finally{
 			if (null != post){
 				post.releaseConnection();

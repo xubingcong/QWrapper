@@ -260,7 +260,7 @@ public class Wrapper_gjdairpo001 implements QunarCrawler{
 				seg.setArrtime(arrTime);
 				seg.setDepDate(year + "-" + arrMon + "-" + arrArray[0]);
 				//获取航班号
-				String flightNO=StringUtils.substringBetween(arrayTd[6], "class=\"FlightColumn\">", "<br");
+				String flightNO=StringUtils.substringBetween(arrayTd[6], "class=\"FlightColumn\">", "<br").replace("\r\n","");
 				seg.setCompany(flightNO.substring(0, 2));
 				seg.setFlightno(flightNO);
 				segs.add(seg);

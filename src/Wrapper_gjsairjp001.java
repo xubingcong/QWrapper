@@ -15,6 +15,7 @@ import java.util.Map;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -60,11 +61,11 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 		p.setTimeOut("1000000");
 		String html=instance.getHtml(p);
 		String page="";
-		try {
-			page = Files.toString(new File("E:\\Noname1.html"),Charsets.UTF_8);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			page = Files.toString(new File("E:\\006.html"),Charsets.UTF_8);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 		ProcessResultInfo result =instance. process(html, p);
 		String str=com.alibaba.fastjson.JSON.toJSONString(result, SerializerFeature.DisableCircularReferenceDetect);
 		System.out.println(str);
@@ -115,21 +116,28 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 		QFPostMethod post = null;
 		try {	
 			QFHttpClient httpClient = new QFHttpClient(param, false);
-	     	post=new QFPostMethod("https://www.adria.si/en/submit_reservations//");
+			 httpClient.getParams().setCookiePolicy(
+						CookiePolicy.BROWSER_COMPATIBILITY);
+			post=new QFPostMethod("https://www.adria.si/en/submit_reservations//");
+			post.setFollowRedirects(false);
 	     	NameValuePair[] pairs = new NameValuePair[]{
-			new NameValuePair("trip-type", "R"),
-			new NameValuePair("from-airport", param.getDep()),
-			new NameValuePair("to-airport", param.getArr()),
-			new NameValuePair("out-date-sys", param.getDepDate()),
-			new NameValuePair("out-date",  param.getDepDate().replaceAll("(....)-(..)-(..)", "$2/$3/$1")),
-			new NameValuePair("in-date-sys",  param.getRetDate()),
-			new NameValuePair("in-date", param.getRetDate().replaceAll("(....)-(..)-(..)", "$2/$3/$1")),
-			new NameValuePair("passengers", "1"),
-			new NameValuePair("children", "0"),
-			new NameValuePair("infants", "0"),
-			new NameValuePair("flight-submit", "Find+flight"),
+	    			new NameValuePair("trip-type", "R"),
+	    			new NameValuePair("from-airport", param.getDep()),
+	    			new NameValuePair("to-airport", param.getArr()),
+	    			new NameValuePair("out-date-sys", param.getDepDate()),
+	    			new NameValuePair("out-date",  param.getDepDate().replaceAll("(....)-(..)-(..)", "$2/$3/$1")),
+	    			new NameValuePair("in-date-sys",  param.getRetDate()),
+	    			new NameValuePair("in-date", param.getRetDate().replaceAll("(....)-(..)-(..)", "$2/$3/$1")),
+	    			new NameValuePair("passengers", "1"),
+	    			new NameValuePair("children", "0"),
+	    			new NameValuePair("infants", "0"),
+	    			new NameValuePair("flight-submit", "Find+flight"),
 		  };
 		     post.setRequestBody(pairs);
+		     String cookie = StringUtils.join(httpClient.getState()
+		    		 .getCookies(), "; ");
+		     post.addRequestHeader("Cookie", cookie);
+		     post.addRequestHeader("Referer", "https://www.adria.si/en");
 		    int statuscode = httpClient.executeMethod(post);
 			if(statuscode>=400){
 				return "StatusError"+statuscode;
@@ -152,19 +160,17 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 				} else {
 					return "";
 				}
-				String cookie = StringUtils.join(httpClient.getState()
-						.getCookies(), "; ");
+
+
 				get = new QFGetMethod(url);
 				get.setFollowRedirects(false);
-				httpClient.getState().clearCookies();
 				get.addRequestHeader("Cookie", cookie);
-				get.addRequestHeader("X-Requested-With", "XMLHttpRequest");
-				get.addRequestHeader("Referer", url);
-				get.addRequestHeader("Content-Type","text/html;charset=UTF-8"); 
+				get.addRequestHeader("Referer", "https://www.adria.si/en");
 				httpClient.executeMethod(get);
-			    return get.getResponseBodyAsString();
+				String html=get.getResponseBodyAsString();
+			    return html;
 		      }catch (Exception e) {
-					e.printStackTrace();
+		    		e.printStackTrace();
 				}finally{
 					if (null != get){
 						get.releaseConnection();

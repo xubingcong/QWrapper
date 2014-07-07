@@ -431,23 +431,23 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 	 * @param strdate
 	 * @return
 	 */
-	public static String  String2Date_yyyy_MM_dd(String str){
-	 //str="Thu Jul 10 12:20:00 GMT 2014";
-		String strDate="";
-		Date date =null;
-		Locale locale = Locale.US; 
-		SimpleDateFormat frm = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy",locale);  
-		SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:MM");
-		try {
-			 date = frm.parse(str);
-			 //2014-07-10 20:07
-			 strDate=df.format(date);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+       public static String  String2Date_yyyy_MM_dd(String str){
+		Map map = new HashMap();
+		map.put("Jan", "01");
+		map.put("Feb", "02");
+		map.put("Mar", "03");
+		map.put("Apr", "04");
+		map.put("May", "05");
+		map.put("Jun", "06");
+		map.put("Jul", "07");
+		map.put("Aug", "08");
+		map.put("Sept", "09");
+		map.put("Oct", "10");
+		map.put("Nov", "11");
+		map.put("Dec", "12");
+	    String [] str_array=str.split(" ");
+	    String strDate=str_array[5]+"-"+map.get(str_array[1])+"-"+str_array[2]+" "+str_array[3].substring(0,5);
 		return strDate;
 	 }
-	
 }
 

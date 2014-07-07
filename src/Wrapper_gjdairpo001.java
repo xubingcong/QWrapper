@@ -7,7 +7,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +17,7 @@ import org.apache.commons.lang.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import com.qunar.qfwrapper.bean.booking.BookingInfo;
@@ -74,6 +74,8 @@ public class Wrapper_gjdairpo001 implements QunarCrawler{
 //			e.printStackTrace();
 //		}
 		ProcessResultInfo result =instance. process(html, p);
+		String str=com.alibaba.fastjson.JSON.toJSONString(result, SerializerFeature.DisableCircularReferenceDetect);
+		System.out.println(str);
 		if(result.isRet() && result.getStatus().equals(Constants.SUCCESS))
 		{
 			List<OneWayFlightInfo> flightList = (List<OneWayFlightInfo>) result.getData();

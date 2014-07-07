@@ -316,7 +316,7 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
     				flightDetail.setWrapperid(param.getWrapperid());
     				flightDetail.setDepdate(String2Date(param.getDepDate()));
     				
-    			     String re_detail_html=getFlightDetail(html,array_flight[0],array_flight[1]);
+    			     String re_detail_html=getFlightDetail(html,"",array_flight[1]);
     			     String re_d_html=StringUtils.substringAfter(re_detail_html, "segment information") ;
     			 	 String[] re_results = re_d_html.split("segment");
     			 	 List<FlightSegement> re_segs = new ArrayList<FlightSegement>();

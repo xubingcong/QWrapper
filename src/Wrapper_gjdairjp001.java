@@ -45,7 +45,6 @@ import com.qunar.qfwrapper.util.QFPostMethod;
  *
  */                  
 public class Wrapper_gjdairjp001 implements QunarCrawler{
-	private static Logger logger = LoggerFactory.getLogger(ExceptionMessage.class);
 	public static void main(String[] args) {
 		/*
 		 * 测试条件
@@ -53,13 +52,7 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 		 * https://book.adria.si/plnext/adriaNext/Override.action?COMMERCIAL_FARE_FAMILY_1=ADRIA&B_LOCATION_1=KBP&E_LOCATION_1=LJU&B_DATE_1=201407100000&DATE_RANGE_VALUE_1=&DATE_RANGE_QUALIFIER_1=&TRIP_TYPE=O&TRAVELLER_TYPE_1=ADT&HAS_INFANT_1=FALSE&LANGUAGE=GB&SO_SITE_EXT_PSP_URL=https%3A%2F%2Fwww.adria.si%2Fen%2Fbooking-select-payment-type%2Fpayment%2F%2F&SO_SITE_EXT_PSPURL=https%3A%2F%2Fwww.adria.si%2Fen%2Fbooking-select-payment-type%2Fpayment%2F%2F&EMBEDDED_TRANSACTION=FlexPricerAvailability&DISPLAY_TYPE=1&PRICING_TYPE=I&SITE=BAUQBAUQ&SO_SITE_OFFICE_ID=LJUJP08AB&SO_SITE_QUEUE_CATEGORY=8C0&SO_SITE_QUEUE_OFFICE_ID=LJUJP08AB&SO_SITE_QUEUE_SUCCESS_ETKT=TRUE&SO_SITE_TRANSFER_TRAVPRICE=TRUE&SO_SITE_TRANSFER_ITINERARY=TRUE&SO_SITE_ALLOW_DATA_TRANS_EXT=TRUE&SO_SITE_DATA_TRANSFER_MODE=FINE&SO_SITE_DATA_TRANSFER=TRUE&REFRESH=0
 	     */
 
-
-
-
 		Wrapper_gjdairjp001 instance = new Wrapper_gjdairjp001();
-
-
-
 
 		FlightSearchParam p =new FlightSearchParam();
 		p.setWrapperid("gjdairjp001");
@@ -96,18 +89,12 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 	public BookingResult getBookingInfo(FlightSearchParam param) {
 
 
-
-
 		String bookingUrlPre = "https://www.adria.si/en/submit_reservations//";
 		BookingResult bookingResult = new BookingResult();
 		BookingInfo bookingInfo = new BookingInfo();
 		bookingInfo.setAction(bookingUrlPre);
 		bookingInfo.setMethod("post");
 		Map<String, String> map = new LinkedHashMap<String, String>();
-
-
-
-
 		map.put("trip-type", "O");
 		map.put("from-airport",param.getDep());
 		map.put("to-airport", param.getArr());
@@ -132,7 +119,6 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 	public String getHtml(FlightSearchParam param) {
 		QFGetMethod get = null;	
 		QFPostMethod post = null;
-		String str="";
 		try {	
 			QFHttpClient httpClient = new QFHttpClient(param, false);
 			 httpClient.getParams().setCookiePolicy(
@@ -189,8 +175,7 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 				String html=get.getResponseBodyAsString();
 			    return html;
 		      }catch (Exception e) {
-		    				str=new  ExceptionMessage().getMessage(e) ;
-				
+		    		e.printStackTrace();
 				}finally{
 					if (null != get){
 						get.releaseConnection();
@@ -199,18 +184,15 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 		    } else {
 				return post.getResponseBodyAsString();
 
-
-
-
 			}
 		} catch (Exception e) {
-				str=new  ExceptionMessage().getMessage(e) ;
+			e.printStackTrace();
 		}finally{
 			if (null != post){
 				post.releaseConnection();
 			}
 		}
-		return str;
+		return "Exception";
 	}
 
 
@@ -250,15 +232,7 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 		}	
 		// 截取页面中的json串
 		String strJson=	org.apache.commons.lang.StringUtils.substringBetween(html, "new String('", "');");
-
-
-
-
 		map=getFlightMap(strJson,low_price);
-
-
-
-
 		List<OneWayFlightInfo> flightList = new ArrayList<OneWayFlightInfo>();
 		for(Map.Entry<String, String> entry:map.entrySet()){
 	          String detail_html=getFlightDetail(html,entry.getKey());
@@ -291,9 +265,6 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
                     	String strArrival_date=String2Date_yyyy_MM_dd(arrival_date);
                     	seg.setArrDate(strArrival_date.substring(0, 10));
                     	seg.setArrtime(strArrival_date.substring(11));
-
-
-
 
 			    	 //航空公司编码
                     	String airline_Code_div=StringUtils.substringBetween(results[i],"airline Code", " <br />");
@@ -478,28 +449,5 @@ public class Wrapper_gjdairjp001 implements QunarCrawler{
 		return strDate;
 	 }
 	
-	 class ExceptionMessage {
-		public static final String ERROR_INFO = "errorInfo";
-		private  Logger logger = LoggerFactory.getLogger(ExceptionMessage.class);
-		
-		public  String getMessage(Exception exception) {
-			StringWriter errMsg = null;
-			try {
-				errMsg = new StringWriter();
-				exception.printStackTrace(new PrintWriter(errMsg));
-				return errMsg.getBuffer().toString();
-			} finally {
-				if (errMsg != null)
-					try {
-						errMsg.close();
-					} catch (Exception e) {
-						logger.error(e.getMessage(), e);
-					} finally {
-						errMsg = null;
-					}
-			}
-		}
-		
-	}
 }
 

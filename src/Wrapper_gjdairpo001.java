@@ -90,22 +90,11 @@ public class Wrapper_gjdairpo001 implements QunarCrawler{
 	@Override
 	public BookingResult getBookingInfo(FlightSearchParam param) {
 		
-		String bookingUrlPre = "http://wizzair.com/en-GB/Search";
+		String bookingUrlPre = "http://flyzambia.com/";
 		BookingResult bookingResult = new BookingResult();
 		BookingInfo bookingInfo = new BookingInfo();
 		bookingInfo.setAction(bookingUrlPre);
-		bookingInfo.setMethod("post");
-		Map<String, String> map = new LinkedHashMap<String, String>();
-		map.put("__EVENTTARGET", "ControlGroupRibbonAnonHomeView_AvailabilitySearchInputRibbonAnonHomeView_ButtonSubmit");
-		map.put("__VIEWSTATE", "/wEPDwUBMGQYAQUeX19Db250cm9sc1JlcXVpcmVQb3N0QmFja0tleV9fFgEFWkNvbnRyb2xHcm91cFJpYmJvbkFub25Ib21lVmlldyRBdmFpbGFiaWxpdHlTZWFyY2hJbnB1dFJpYmJvbkFub25Ib21lVmlldyRTdHVkZXRTZW5pb3JHcm91cLcMW6Bfdi6XQ3jIOh46M/Uyyf+xnV2YpSj4opm7Zf8k");
-		map.put("ControlGroupRibbonAnonHomeView$AvailabilitySearchInputRibbonAnonHomeView$OriginStation", param.getDep());
-		map.put("ControlGroupRibbonAnonHomeView$AvailabilitySearchInputRibbonAnonHomeView$DestinationStation", param.getArr());
-		map.put("ControlGroupRibbonAnonHomeView$AvailabilitySearchInputRibbonAnonHomeView$DepartureDate",param.getDepDate().replaceAll("(....)-(..)-(..)", "$3/$2/$1"));
-		map.put("ControlGroupRibbonAnonHomeView$AvailabilitySearchInputRibbonAnonHomeView$PaxCountADT", "1"	);
-		map.put("ControlGroupRibbonAnonHomeView$AvailabilitySearchInputRibbonAnonHomeView$PaxCountCHD", "0");
-		map.put("ControlGroupRibbonAnonHomeView$AvailabilitySearchInputRibbonAnonHomeView$PaxCountINFANT", "0");
-		map.put("ControlGroupRibbonAnonHomeView$AvailabilitySearchInputRibbonAnonHomeView$ButtonSubmit", "Search");
-		bookingInfo.setInputs(map);		
+		bookingInfo.setMethod("get");
 		bookingResult.setData(bookingInfo);
 		bookingResult.setRet(true);
 		return bookingResult;

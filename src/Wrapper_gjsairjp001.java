@@ -12,12 +12,16 @@ import java.util.Locale;
 import java.util.Map;
 
 
+
+
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+
+
 
 
 import com.alibaba.fastjson.JSON;
@@ -38,6 +42,8 @@ import com.qunar.qfwrapper.interfaces.QunarCrawler;
 import com.qunar.qfwrapper.util.QFGetMethod;
 import com.qunar.qfwrapper.util.QFHttpClient;
 import com.qunar.qfwrapper.util.QFPostMethod;
+
+
 
 
 /**
@@ -85,9 +91,13 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 		}
 
 
+
+
 	}
 	@Override
 	public BookingResult getBookingInfo(FlightSearchParam param) {
+
+
 
 
 		String bookingUrlPre = "https://www.adria.si/en/submit_reservations//";
@@ -96,6 +106,8 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 		bookingInfo.setAction(bookingUrlPre);
 		bookingInfo.setMethod("post");
 		Map<String, String> map = new LinkedHashMap<String, String>();
+
+
 
 
 		map.put("trip-type", "R");
@@ -114,6 +126,8 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 		bookingResult.setRet(true);
 		return bookingResult;
 	}
+
+
 
 
 	@Override
@@ -170,6 +184,10 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 
 
 
+
+
+
+
 				get = new QFGetMethod(url);
 				get.setFollowRedirects(false);
 				get.addRequestHeader("Cookie", cookie);
@@ -188,6 +206,8 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 				return post.getResponseBodyAsString();
 
 
+
+
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -198,6 +218,8 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 		}
 		return "Exception";
 	}
+
+
 
 
 	@Override
@@ -237,6 +259,8 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 		map=getFlightMap(strJson,low_price);
 
 
+
+
 		List<RoundTripFlightInfo> flightList = new ArrayList<RoundTripFlightInfo>();
 		for(Map.Entry<String, String> entry:map.entrySet()){
 		String [] array_flight=	entry.getKey().split("\\|");
@@ -271,6 +295,7 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
                     	seg.setArrDate(strArrival_date.substring(0, 10));
                     	seg.setArrtime(strArrival_date.substring(11));
 
+
 			    	 //航空公司编码
                     	String airline_Code_div=StringUtils.substringBetween(results[i],"airline Code", " <br />");
                     	String airline_Code=StringUtils.substringBetween(airline_Code_div,"value=\"", "\"");
@@ -291,7 +316,7 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
     				flightDetail.setWrapperid(param.getWrapperid());
     				flightDetail.setDepdate(String2Date(param.getDepDate()));
     				
-    			     String re_detail_html=getFlightDetail(html,"",array_flight[1]);
+    			     String re_detail_html=getFlightDetail(html,array_flight[0],array_flight[1]);
     			     String re_d_html=StringUtils.substringAfter(re_detail_html, "segment information") ;
     			 	 String[] re_results = re_d_html.split("segment");
     			 	 List<FlightSegement> re_segs = new ArrayList<FlightSegement>();
@@ -381,6 +406,8 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 							//比较同一航班获取的价格 取最低价 map.put(往ID|去ID,price)
 
 
+
+
 							if(map.keySet().toString().contains(o_flight_id+"|"+i_flight_id)){
 						    	if(	Double.parseDouble(map.get(o_flight_id+"|"+i_flight_id).toString())>Double.parseDouble(price)){
 							          map.put(o_flight_id+"|"+i_flight_id, price);
@@ -398,6 +425,8 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 		}
 		return map;
 	}
+
+
 
 
 	/**
@@ -455,6 +484,10 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 		}	
 		return "Exception";
 	}
+
+
+
+
 
 
 

@@ -1,4 +1,3 @@
-
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -12,12 +11,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -38,6 +39,7 @@ import com.qunar.qfwrapper.util.QFGetMethod;
 import com.qunar.qfwrapper.util.QFHttpClient;
 import com.qunar.qfwrapper.util.QFPostMethod;
 
+
 /**
  * 往返请求
  * @author xubc
@@ -53,7 +55,7 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 	     */
 		Wrapper_gjsairjp001 instance = new Wrapper_gjsairjp001();
 		FlightSearchParam p =new FlightSearchParam();
-		p.setWrapperid("gjsairjp001");
+		p.setWrapperid("gjdairjp001");
 		p.setDep("KBP");
 		p.setArr("LJU");
 		p.setDepDate("2014-07-10");
@@ -61,11 +63,11 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 		p.setTimeOut("1000000");
 		String html=instance.getHtml(p);
 		String page="";
-		try {
-			page = Files.toString(new File("E:\\006.html"),Charsets.UTF_8);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			page = Files.toString(new File("E:\\006.html"),Charsets.UTF_8);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 		ProcessResultInfo result =instance. process(html, p);
 		String str=com.alibaba.fastjson.JSON.toJSONString(result, SerializerFeature.DisableCircularReferenceDetect);
 		System.out.println(str);
@@ -81,18 +83,21 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 		{
 			System.out.println(result.getStatus());
 		}
-			
+
+
 	}
 	@Override
 	public BookingResult getBookingInfo(FlightSearchParam param) {
-		
+
+
 		String bookingUrlPre = "https://www.adria.si/en/submit_reservations//";
 		BookingResult bookingResult = new BookingResult();
 		BookingInfo bookingInfo = new BookingInfo();
 		bookingInfo.setAction(bookingUrlPre);
 		bookingInfo.setMethod("post");
 		Map<String, String> map = new LinkedHashMap<String, String>();
-		
+
+
 		map.put("trip-type", "R");
 		map.put("from-airport",param.getDep());
 		map.put("to-airport", param.getArr());
@@ -109,6 +114,7 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 		bookingResult.setRet(true);
 		return bookingResult;
 	}
+
 
 	@Override
 	public String getHtml(FlightSearchParam param) {
@@ -162,6 +168,8 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 				}
 
 
+
+
 				get = new QFGetMethod(url);
 				get.setFollowRedirects(false);
 				get.addRequestHeader("Cookie", cookie);
@@ -179,6 +187,7 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 		    } else {
 				return post.getResponseBodyAsString();
 
+
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -189,6 +198,7 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 		}
 		return "Exception";
 	}
+
 
 	@Override
 	public  ProcessResultInfo process(String html, FlightSearchParam param) {
@@ -225,7 +235,8 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 		// 截取页面中的json串
 		String strJson=	org.apache.commons.lang.StringUtils.substringBetween(html, "new String('", "');");
 		map=getFlightMap(strJson,low_price);
-		
+
+
 		List<RoundTripFlightInfo> flightList = new ArrayList<RoundTripFlightInfo>();
 		for(Map.Entry<String, String> entry:map.entrySet()){
 		String [] array_flight=	entry.getKey().split("\\|");
@@ -248,18 +259,17 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
                     	String arrival=StringUtils.substringBetween(arrival_div,"value=\"", "\"");
                     	seg.setArrairport(arrival);
 			    	 //出发时间
-                       	String departure_date_div=StringUtils.substringBetween(results[i],"departure date", " <br />");
+                    	String departure_date_div=StringUtils.substringBetween(results[i],"departure date", " <br />");
                     	String departure_date=StringUtils.substringBetween(departure_date_div,"value=\"", "\"");
-                    	String strDeparture_date=String2Date_yyyy_MM_dd(departure_date);
-                    	seg.setDepDate(strDeparture_date.substring(0, 10));
-                    	seg.setDeptime(strDeparture_date.substring(11));
+                    	seg.setDepDate(departure_date.substring(0, 10));
+                    	seg.setDeptime(departure_date.substring(11));
 			    	 //到达时间
-                      	String arrival_date_div=StringUtils.substringBetween(results[i],"arrival date", " <br />");
+                    	String arrival_date_div=StringUtils.substringBetween(results[i],"arrival date", " <br />");
                     	String arrival_date=StringUtils.substringBetween(arrival_date_div,"value=\"", "\"");
-                    	String strArrival_date=String2Date_yyyy_MM_dd(arrival_date);
-                    	seg.setArrDate(strArrival_date.substring(0, 10));
-                    	seg.setArrtime(strArrival_date.substring(11));
-		
+                    	seg.setArrDate(arrival_date.substring(0, 10));
+                    	seg.setArrtime(arrival_date.substring(11));
+
+
 			    	 //航空公司编码
                     	String airline_Code_div=StringUtils.substringBetween(results[i],"airline Code", " <br />");
                     	String airline_Code=StringUtils.substringBetween(airline_Code_div,"value=\"", "\"");
@@ -298,15 +308,13 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
    			    	 //出发时间
                        	String departure_date_div=StringUtils.substringBetween(re_results[i],"departure date", " <br />");
                        	String departure_date=StringUtils.substringBetween(departure_date_div,"value=\"", "\"");
-                       	String strDeparture_date1=String2Date_yyyy_MM_dd(departure_date);
-                       	re_seg.setDepDate(strDeparture_date1.substring(0, 10));
-                       	re_seg.setDeptime(strDeparture_date1.substring(11));
+                       	re_seg.setDepDate(departure_date.substring(0, 10));
+                       	re_seg.setDeptime(departure_date.substring(11));
    			    	 //到达时间
                        	String arrival_date_div=StringUtils.substringBetween(re_results[i],"arrival date", " <br />");
                        	String arrival_date=StringUtils.substringBetween(arrival_date_div,"value=\"", "\"");
-                       	String strArrival_date1=String2Date_yyyy_MM_dd(arrival_date);
-                       	re_seg.setArrDate(strArrival_date1.substring(0, 10));
-                       	re_seg.setArrtime(strArrival_date1.substring(11));
+                       	re_seg.setArrDate(arrival_date.substring(0, 10));
+                       	re_seg.setArrtime(arrival_date.substring(11));
    		
    			    	 //航空公司编码
                        	String airline_Code_div=StringUtils.substringBetween(re_results[i],"airline Code", " <br />");
@@ -368,7 +376,8 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 						for(String i_flight_id:i_array_flight){
 						if(!StringUtils.isBlank(i_flight_id)){
 							//比较同一航班获取的价格 取最低价 map.put(往ID|去ID,price)
-							
+
+
 							if(map.keySet().toString().contains(o_flight_id+"|"+i_flight_id)){
 						    	if(	Double.parseDouble(map.get(o_flight_id+"|"+i_flight_id).toString())>Double.parseDouble(price)){
 							          map.put(o_flight_id+"|"+i_flight_id, price);
@@ -386,7 +395,8 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 		}
 		return map;
 	}
-	
+
+
 	/**
 	 * 根据json中的recosID：序号 获取航班detail info
 	 * @param String html,String recosID
@@ -442,8 +452,10 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 		}	
 		return "Exception";
 	}
-	
-	
+
+
+
+
 	/**
 	 * String 转 Date
 	 * @param strdate
@@ -465,7 +477,7 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 	 * @param strdate
 	 * @return
 	 */
-	public static String  String2Date_yyyy_MM_dd(String str){
+         public static String  String2Date_yyyy_MM_dd(String str){
 		Map map = new HashMap();
 		map.put("Jan", "01");
 		map.put("Feb", "02");
@@ -483,5 +495,4 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 	    String strDate=str_array[5]+"-"+map.get(str_array[1])+"-"+str_array[2]+" "+str_array[3].substring(0,5);
 		return strDate;
 	 }
-	
 }

@@ -269,7 +269,7 @@ public class Wrapper_gjsairpo001 implements QunarCrawler{
 				String[] arrArray = arrDate.split(" ");
 				String arrMon = monMap.get(arrArray[1]).toString();
 				seg.setArrtime(arrTime);
-				seg.setDepDate(year + "-" + arrMon + "-" + arrArray[0]);
+				seg.setArrDate(year + "-" + arrMon + "-" + arrArray[0]);
 				//获取航班号
 				String flightNO=StringUtils.substringBetween(arrayTd[6], "class=\"FlightColumn\">", "<br").replace("\r\n","");
 				seg.setCompany(flightNO.substring(0, 2));
@@ -311,10 +311,10 @@ public class Wrapper_gjsairpo001 implements QunarCrawler{
 					//获取到达日期和时间
 					String re_arrTime=StringUtils.substringBetween(re_arrayTd[4], "class=\"time\">", "</span>");
 					String re_arrDate=StringUtils.substringBetween(re_arrayTd[4], "class=\"flightDate\">", "</span>");
-					String[] re_arrArray = arrDate.split(" ");
+					String[] re_arrArray = re_arrDate.split(" ");
 					String re_arrMon = monMap.get(re_arrArray[1]).toString();
 					re_seg.setArrtime(re_arrTime);
-					re_seg.setDepDate(year + "-" + re_arrMon + "-" + re_arrArray[0]);
+					re_seg.setArrDate(year + "-" + re_arrMon + "-" + re_arrArray[0]);
 					//获取航班号
 					String re_flightNO=StringUtils.substringBetween(re_arrayTd[6], "class=\"FlightColumn\">", "<br").replace("\r\n","");
 					re_seg.setCompany(re_flightNO.substring(0, 2));

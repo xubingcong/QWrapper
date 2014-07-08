@@ -41,7 +41,6 @@ public class Wrapper_gjsairw6001 implements QunarCrawler{
 		 *测试条件
 		 *FCO-TSR 2014-08-14 2014-08-22 BGY-PRG 2014-08-22 2014-08-29 VKO-BUD 2014-08-30 2014-09-04 
 		 */
-				
 		Wrapper_gjsairw6001 instance = new Wrapper_gjsairw6001();
 		
 		FlightSearchParam p =new FlightSearchParam();
@@ -208,9 +207,8 @@ public class Wrapper_gjsairw6001 implements QunarCrawler{
 			String[] ret_results = ret_div
 			.split("<p class=\" flight label  selectFlightTooltip \">");
 			for (int i = 1; i < results.length; i++) {
-				RoundTripFlightInfo baseFlight = new RoundTripFlightInfo();
+
 				List<FlightSegement> segs = new ArrayList<FlightSegement>();
-				FlightDetail flightDetail = new FlightDetail();
 				List<String> flightNoList = new ArrayList<String>();
 				String span = StringUtils
 						.substringBetween(
@@ -240,13 +238,7 @@ public class Wrapper_gjsairw6001 implements QunarCrawler{
 				seg.setArrtime(arrDate.substring(11));
 				seg.setCompany(array[7]);
 				segs.add(seg);
-				flightDetail.setFlightno(flightNoList);
-				flightDetail.setMonetaryunit(currencyCode);
-				
-				flightDetail.setDepcity(param.getDep());
-				flightDetail.setArrcity(param.getArr());
-				flightDetail.setWrapperid(param.getWrapperid());
-				flightDetail.setDepdate(String2Date(param.getDepDate()));
+
 				
 				for (int j = 1; j < ret_results.length; j++) {
 				//截取返回航班信息
@@ -279,6 +271,14 @@ public class Wrapper_gjsairw6001 implements QunarCrawler{
 					re_segs.add(re_seg);
 					List<String> retflightno =new ArrayList<String>();
 					retflightno.add(ret_code.substring(2));
+					RoundTripFlightInfo baseFlight = new RoundTripFlightInfo();
+					FlightDetail flightDetail = new FlightDetail();
+					flightDetail.setFlightno(flightNoList);
+					flightDetail.setMonetaryunit(currencyCode);
+					flightDetail.setDepcity(param.getDep());
+					flightDetail.setArrcity(param.getArr());
+					flightDetail.setWrapperid(param.getWrapperid());
+					flightDetail.setDepdate(String2Date(param.getDepDate()));
 					baseFlight.setInfo(segs);
 					flightDetail.setPrice(Double.parseDouble(price.substring(1))+Double.parseDouble(returnedPrice.substring(1)));
 					baseFlight.setDetail(flightDetail);

@@ -14,12 +14,20 @@ import java.util.Map;
 
 
 
+
+
+
+
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+
+
+
+
 
 
 
@@ -42,6 +50,10 @@ import com.qunar.qfwrapper.interfaces.QunarCrawler;
 import com.qunar.qfwrapper.util.QFGetMethod;
 import com.qunar.qfwrapper.util.QFHttpClient;
 import com.qunar.qfwrapper.util.QFPostMethod;
+
+
+
+
 
 
 
@@ -93,9 +105,17 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 
 
 
+
+
+
+
 	}
 	@Override
 	public BookingResult getBookingInfo(FlightSearchParam param) {
+
+
+
+
 
 
 
@@ -106,6 +126,10 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 		bookingInfo.setAction(bookingUrlPre);
 		bookingInfo.setMethod("post");
 		Map<String, String> map = new LinkedHashMap<String, String>();
+
+
+
+
 
 
 
@@ -126,6 +150,10 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 		bookingResult.setRet(true);
 		return bookingResult;
 	}
+
+
+
+
 
 
 
@@ -188,6 +216,14 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 
 
 
+
+
+
+
+
+
+
+
 				get = new QFGetMethod(url);
 				get.setFollowRedirects(false);
 				get.addRequestHeader("Cookie", cookie);
@@ -208,6 +244,10 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 
 
 
+
+
+
+
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -218,6 +258,10 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 		}
 		return "Exception";
 	}
+
+
+
+
 
 
 
@@ -261,13 +305,16 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 
 
 
+
+
+
+
 		List<RoundTripFlightInfo> flightList = new ArrayList<RoundTripFlightInfo>();
 		for(Map.Entry<String, String> entry:map.entrySet()){
 		String [] array_flight=	entry.getKey().split("\\|");
 		    // 	String	detail_html = Files.toString(new File("E:\\001.html"),Charsets.UTF_8);
-		    RoundTripFlightInfo baseFlight = new RoundTripFlightInfo();
+
 			     List<FlightSegement> segs = new ArrayList<FlightSegement>();
-			     FlightDetail flightDetail = new FlightDetail();
 			     List<String> flightNoList = new ArrayList<String>();
 			     String detail_html=getFlightDetail(html,array_flight[0],"");
 			     String d_html=StringUtils.substringAfter(detail_html, "segment information") ;
@@ -295,7 +342,6 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
                     	seg.setArrDate(strArrival_date.substring(0, 10));
                     	seg.setArrtime(strArrival_date.substring(11));
 
-
 			    	 //航空公司编码
                     	String airline_Code_div=StringUtils.substringBetween(results[i],"airline Code", " <br />");
                     	String airline_Code=StringUtils.substringBetween(airline_Code_div,"value=\"", "\"");
@@ -308,14 +354,7 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
                     
                     	segs.add(seg);
                     }
-    				flightDetail.setFlightno(flightNoList);
-    				flightDetail.setMonetaryunit("EUR");
-    				flightDetail.setPrice(Double.parseDouble(entry.getValue()));
-    				flightDetail.setDepcity(param.getDep());
-    				flightDetail.setArrcity(param.getArr());
-    				flightDetail.setWrapperid(param.getWrapperid());
-    				flightDetail.setDepdate(String2Date(param.getDepDate()));
-    				
+
     			     String re_detail_html=getFlightDetail(html,"",array_flight[1]);
     			     String re_d_html=StringUtils.substringAfter(re_detail_html, "segment information") ;
     			 	 String[] re_results = re_d_html.split("segment");
@@ -357,7 +396,17 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
                       }
     				
     				//baseFlight.setOutboundPrice(Math.round(Double.parseDouble(price.substring(1))));
-					baseFlight.setRetinfo(re_segs);
+         		    RoundTripFlightInfo baseFlight = new RoundTripFlightInfo();
+        		    FlightDetail flightDetail = new FlightDetail();
+    				flightDetail.setFlightno(flightNoList);
+    				flightDetail.setMonetaryunit("EUR");
+    				flightDetail.setPrice(Double.parseDouble(entry.getValue()));
+    				flightDetail.setDepcity(param.getDep());
+    				flightDetail.setArrcity(param.getArr());
+    				flightDetail.setWrapperid(param.getWrapperid());
+    				flightDetail.setDepdate(String2Date(param.getDepDate()));
+    				
+    		        baseFlight.setRetinfo(re_segs);
 					baseFlight.setRetdepdate(String2Date(param.getRetDate()));
 					baseFlight.setRetflightno(retflightno);
 				    //baseFlight.setReturnedPrice(Math.round(Double.parseDouble(returnedPrice.substring(1))));
@@ -404,10 +453,6 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 						for(String i_flight_id:i_array_flight){
 						if(!StringUtils.isBlank(i_flight_id)){
 							//比较同一航班获取的价格 取最低价 map.put(往ID|去ID,price)
-
-
-
-
 							if(map.keySet().toString().contains(o_flight_id+"|"+i_flight_id)){
 						    	if(	Double.parseDouble(map.get(o_flight_id+"|"+i_flight_id).toString())>Double.parseDouble(price)){
 							          map.put(o_flight_id+"|"+i_flight_id, price);
@@ -425,6 +470,10 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 		}
 		return map;
 	}
+
+
+
+
 
 
 
@@ -484,6 +533,14 @@ public class Wrapper_gjsairjp001 implements QunarCrawler{
 		}	
 		return "Exception";
 	}
+
+
+
+
+
+
+
+
 
 
 

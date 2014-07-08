@@ -56,7 +56,7 @@ public class Wrapper_gjsairpo001 implements QunarCrawler{
 		p.setDepDate("2014-07-18");
 		p.setRetDate("2014-07-22");
 		p.setTimeOut("60000");
-//		String html=instance.getHtml(p);
+		String html=instance.getHtml(p);
 //		{
 //			try {
 //			
@@ -66,16 +66,13 @@ public class Wrapper_gjsairpo001 implements QunarCrawler{
 //				e.printStackTrace();
 //			}
 //		}
-		
-		
-		
-		String page="";
-		try {
-			page = Files.toString(new File("E:\\006.html"),Charsets.UTF_8);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		ProcessResultInfo result =instance. process(page, p);
+//		String page="";
+//		try {
+//			page = Files.toString(new File("E:\\006.html"),Charsets.UTF_8);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+		ProcessResultInfo result =instance. process(html, p);
 		if(result.isRet() && result.getStatus().equals(Constants.SUCCESS))
 		{
 			List<RoundTripFlightInfo> flightList = (List<RoundTripFlightInfo>) result.getData();
@@ -248,9 +245,7 @@ public class Wrapper_gjsairpo001 implements QunarCrawler{
 			Map monMap =getMonth();
 			for (int i = 1; i < results.length; i++) {
 				if(results[i].contains("FltRequestedDate")){
-				RoundTripFlightInfo baseFlight = new RoundTripFlightInfo();
 				List<FlightSegement> segs = new ArrayList<FlightSegement>();
-				FlightDetail flightDetail = new FlightDetail();
 				List<String> flightNoList = new ArrayList<String>();
 			    String [] arrayTd=  results[i].split("<td");
 				FlightSegement seg = new FlightSegement();
@@ -276,8 +271,7 @@ public class Wrapper_gjsairpo001 implements QunarCrawler{
 				seg.setFlightno(flightNO);
 				flightNoList.add(flightNO);
 				segs.add(seg);
-				flightDetail.setFlightno(flightNoList);
-				flightDetail.setMonetaryunit("USD");
+
 				String price ="";
 				for(int k=7;k<arrayTd.length;k++){
 					if(arrayTd[k].contains("$")){
@@ -288,10 +282,7 @@ public class Wrapper_gjsairpo001 implements QunarCrawler{
 				if("".endsWith(price)){
 					continue;
 				}
-				flightDetail.setDepcity(param.getDep());
-				flightDetail.setArrcity(param.getArr());
-				flightDetail.setWrapperid(param.getWrapperid());
-				flightDetail.setDepdate(String2Date(param.getDepDate()));
+
 				
 				for (int j = 1; j < ret_results.length; j++) {
 					if(ret_results[j].contains("FltRequestedDate")){
@@ -332,6 +323,14 @@ public class Wrapper_gjsairpo001 implements QunarCrawler{
 					if("".endsWith(re_price)){
 						continue;
 					}
+					RoundTripFlightInfo baseFlight = new RoundTripFlightInfo();
+					FlightDetail flightDetail = new FlightDetail();
+					flightDetail.setFlightno(flightNoList);
+					flightDetail.setMonetaryunit("USD");
+					flightDetail.setDepcity(param.getDep());
+					flightDetail.setArrcity(param.getArr());
+					flightDetail.setWrapperid(param.getWrapperid());
+					flightDetail.setDepdate(String2Date(param.getDepDate()));
 					baseFlight.setInfo(segs);
 					flightDetail.setPrice(Double.parseDouble(price)+Double.parseDouble(re_price));
 					baseFlight.setDetail(flightDetail);

@@ -49,20 +49,26 @@ public class Wrapper_gjsairmu005 implements QunarCrawler{
 		
 		FlightSearchParam p =new FlightSearchParam();
 		p.setWrapperid("gjsairmu005");
-		p.setDep("PEK");
-		p.setArr("GMP");
-		p.setDepDate("2014-07-15");
-		p.setRetDate("2014-08-27");
+		p.setDep("JFK");
+		p.setArr("PEK");
+		p.setDepDate("2014-08-01");
+		p.setRetDate("2014-08-08");
 		p.setTimeOut("120000");
-		String html=instance.getHtml(p);
+	//	String html=instance.getHtml(p);
 	//	System.out.println(html);
 		String page="";
+//		try {
+//			Files.write(html, new File("E:\\006.html"),Charsets.UTF_8);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+		
 		try {
-			Files.write(html, new File("E:\\006.html"),Charsets.UTF_8);
+			page = Files.toString(new File("E:\\006.html"),Charsets.UTF_8);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		ProcessResultInfo result =instance. process(html, p);
+		ProcessResultInfo result =instance. process(page, p);
 		if(result.isRet() && result.getStatus().equals(Constants.SUCCESS))
 		{
 			List<RoundTripFlightInfo> flightList = (List<RoundTripFlightInfo>) result.getData();
@@ -94,7 +100,7 @@ public class Wrapper_gjsairmu005 implements QunarCrawler{
 		map.put("depDate", arg0.getDepDate());
 		map.put("depRtDate", arg0.getRetDate());
 		map.put("depRtDate", "");
-	//	map.put("submit", "Book+Now");
+		//map.put("submit", "Book+Now");
 		bookingInfo.setInputs(map);		
 		bookingResult.setData(bookingInfo);
 		bookingResult.setRet(true);
@@ -107,6 +113,7 @@ public class Wrapper_gjsairmu005 implements QunarCrawler{
 		try {	
 		 httpClient = new QFHttpClient(param, false);
 			String getUrl = String
+			             //http://ca.ceair.com/muovc/front/reservation/flight-search!doFlightSearch.shtml?cond.routeType=1&depDate=2014-07-11&cond.tripType=OW&cond.depCode=PEK&depRtDate=&cond.arrCode=PVG
 		                 //	http://ca.ceair.com/muovc/front/reservation/flight-search!doFlightSearch.shtml?cond.tripType=RT&cond.depCode=PEK&cond.arrCode=GMP&cond.routeType=3&depDate=2014-07-15&depRtDate=2014-08-27&submit=Book+Now
 					.format("http://ca.ceair.com/muovc/front/reservation/flight-search!doFlightSearch.shtml?cond.tripType=RT&cond.depCode=%s&cond.arrCode=%s&cond.routeType=1&depDate=%s&depRtDate=%s&submit=Book+Now",param.getDep(), param.getArr(),param.getDepDate(),param.getRetDate());
 			get = new QFGetMethod(getUrl);
@@ -143,22 +150,18 @@ public class Wrapper_gjsairmu005 implements QunarCrawler{
 		}
 		try {
 			List<RoundTripFlightInfo> flightList = new ArrayList<RoundTripFlightInfo>();
-
+			String html_=StringUtils.substringBetween(html, " name=\"form_flight_booking\"", "</form>");
 			//截取"往"的航班div
-			String dep_div=StringUtils.substringBetween(html,"class=\"flight_table rt_go\">","class=\"flight_table rt_back\"");
+			String dep_div=StringUtils.substringBetween(html_, "<table","</table>");
 			//截取"返"的航班div
-			String ret_div=StringUtils.substringBetween(html, "class=\"flight_table rt_back\"","class=\"flight_table rt_back\"");
-			
+			dep_div=StringUtils.substringAfterLast(dep_div, "</thead>").replace("\r\n","").trim();
+			String ret_div=StringUtils.substringBetween(html_, " <div class=\"flight_table rt_back\" style=''>","</div>");
 			Map monMap =getMonth();
-			//	Map cityMap=getCity(Files.toString(new File("E:\\007.html"),Charsets.UTF_8));
 			Map cityMap=getCity();
-			
 			String[] results =dep_div.split("<tbody>");
 			String[] ret_results = ret_div.split("<tbody>");
 			for (int j = 1; j < results.length; j++) {
-				RoundTripFlightInfo baseFlight = new RoundTripFlightInfo();
 				List<FlightSegement> segs = new ArrayList<FlightSegement>();
-				FlightDetail flightDetail = new FlightDetail();
 				List<String> flightNoList = new ArrayList<String>();
 				 String[] FlightDiv = results[j].split("<tr class=\"booking\">");
 				 String totalPrice="";
@@ -168,7 +171,7 @@ public class Wrapper_gjsairmu005 implements QunarCrawler{
 			    		 String[] array_td = cityDiv.split("<td");
 		    			// 票价
 					    if(i==1)
-					    totalPrice=StringUtils.substringBetween(array_td[4],"\"price\">","</span>").replace(",", "");;
+					    totalPrice=StringUtils.substringBetween(array_td[4],"\"price\">","</span>").replace(",", "");
 						FlightSegement seg=new FlightSegement();
 						// 获取起飞时间
 						String year = param.getDepDate().substring(0, 4);
@@ -196,24 +199,21 @@ public class Wrapper_gjsairmu005 implements QunarCrawler{
 					    seg.setCompany(company);
 					    //获取起飞城市
 					    String depairport=StringUtils.substringBetween(array_td[1],">","</td>").trim();
-					    seg.setDepairport(cityMap.get(depairport).toString());
+					   seg.setDepairport(cityMap.get(depairport).toString());
 					    //获取到达城市
 					    String arrairport=StringUtils.substringBetween(array_td[2],">","</td>").trim();
-					    seg.setArrairport(cityMap.get(arrairport).toString());
+				    seg.setArrairport(cityMap.get(arrairport).toString());
 					    segs.add(seg);
 				 }
-					flightDetail.setFlightno(flightNoList);
-					flightDetail.setMonetaryunit("USD");
-					flightDetail.setDepcity(param.getDep());
-					flightDetail.setArrcity(param.getArr());
-					flightDetail.setWrapperid(param.getWrapperid());
-					flightDetail.setDepdate(String2Date(param.getDepDate()));
+		
 				
 				for (int k = 1; k < ret_results.length; k++) {
+					
 				//截取返回航班信息
 					List<FlightSegement> re_segs = new ArrayList<FlightSegement>();
 					List<String> retflightno =new ArrayList<String>();
 					 String[] reFlightDiv = ret_results[k].split("<tr class=\"booking\">");
+					
 					 for(int n=1;n<reFlightDiv.length;n++){
 					  FlightSegement re_seg=new FlightSegement();
 					  String cityDiv=StringUtils.substringAfter(reFlightDiv[n],"区分是飞机还是高铁的图标 -->");
@@ -221,7 +221,6 @@ public class Wrapper_gjsairmu005 implements QunarCrawler{
 		    			// 票价
 					    if(n==1)
 					    reTotalPrice=StringUtils.substringBetween(array_td[4],"\"price\">","</span>").replace(",", "");;
-						FlightSegement seg=new FlightSegement();
 						// 获取起飞时间
 						String year = param.getDepDate().substring(0, 4);
 						String depDate = StringUtils.substringBetween(reFlightDiv[n],
@@ -229,41 +228,50 @@ public class Wrapper_gjsairmu005 implements QunarCrawler{
 						String depDay = depDate.substring(6);
 						String[] depaArray = depDay.split("\\.");
 						String depMon = monMap.get(depaArray[0]).toString();
-						seg.setDepDate(year + "-" + depMon + "-" + depaArray[1]);
-						seg.setDeptime(depDate.substring(0, 5));
+						re_seg.setDepDate(year + "-" + depMon + "-" + depaArray[1]);
+						re_seg.setDeptime(depDate.substring(0, 5));
 					    // 获取到达时间
 						String arrDate = StringUtils.substringBetween(reFlightDiv[n],
 							"/icon_time_red.gif\" />", "</td>").trim();
 						String arrDay = depDate.substring(6);
 						String[] arrArray = arrDay.split("\\.");
 						String arrMon = monMap.get(arrArray[0]).toString();
-						seg.setArrDate(year + "-" + arrMon + "-" + arrArray[1]);
-						seg.setArrtime(arrDate.substring(0, 5));
+						re_seg.setArrDate(year + "-" + arrMon + "-" + arrArray[1]);
+						re_seg.setArrtime(arrDate.substring(0, 5));
 						//获取航班号
 						String flightNo=StringUtils.substringBetween(array_td[0],"/>","</td>").trim();
-						seg.setFlightno(flightNo);
+						re_seg.setFlightno(flightNo);
 						retflightno.add(flightNo);
 					    //获取航空公司编号
 						String company=flightNo.substring(0, 2);
-					    seg.setCompany(company);
+						re_seg.setCompany(company);
 					    //获取起飞城市
 					    String depairport=StringUtils.substringBetween(array_td[1],">","</td>").trim();
-					    seg.setDepairport(cityMap.get(depairport).toString());
+					    re_seg.setDepairport(cityMap.get(depairport).toString());
 					    //获取到达城市
 					    String arrairport=StringUtils.substringBetween(array_td[2],">","</td>").trim();
-					    seg.setArrairport(cityMap.get(arrairport).toString());
-					    re_segs.add(seg);
+					    re_seg.setArrairport(cityMap.get(arrairport).toString());
+					    re_segs.add(re_seg);
 					  
 					 }
-					baseFlight.setInfo(segs);
+					 RoundTripFlightInfo baseFlight = new RoundTripFlightInfo();
+					FlightDetail flightDetail = new FlightDetail();
+				    flightDetail.setFlightno(flightNoList);
+					flightDetail.setMonetaryunit("USD");
+					flightDetail.setDepcity(param.getDep());
+					flightDetail.setArrcity(param.getArr());
+					flightDetail.setWrapperid(param.getWrapperid());
+					flightDetail.setDepdate(String2Date(param.getDepDate()));
 					flightDetail.setPrice(Double.parseDouble(totalPrice)+Double.parseDouble(reTotalPrice));
+					baseFlight.setInfo(segs);
 					baseFlight.setDetail(flightDetail);
 					baseFlight.setOutboundPrice(Double.parseDouble(totalPrice));
 					baseFlight.setRetinfo(re_segs);
 					baseFlight.setRetdepdate(String2Date(param.getRetDate()));
 					baseFlight.setRetflightno(retflightno);
 				    baseFlight.setReturnedPrice(Double.parseDouble(reTotalPrice));
-				    flightList.add(baseFlight);
+//				    System.out.println(baseFlight.toString());
+				    flightList.add(baseFlight);	
 			  }
 		    }
 			result.setRet(true);

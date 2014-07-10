@@ -144,8 +144,7 @@ public class Wrapper_gjsairpo001 implements QunarCrawler{
 				FormData.put("Destination", Destination);
 				FormData.put("DepartureDate", DepartureDate);
 				JSONArray ReturnDate = new JSONArray();
-			    ReturnDate.add("22-Jul-2014");
-			    ReturnDate.add("22-Jul-2014");
+			     ReturnDate.add(arg0.getRetDate());
 			    FormData.put("ReturnDate", ReturnDate);
 				FormData.put("Adults", "1");
 				FormData.put("Children", "0");

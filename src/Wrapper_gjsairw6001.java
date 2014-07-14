@@ -39,15 +39,15 @@ public class Wrapper_gjsairw6001 implements QunarCrawler{
 	public static void main(String[] args) {
 		/*
 		 *测试条件
-		 *FCO-TSR 2014-08-14 2014-08-22 BGY-PRG 2014-08-22 2014-08-29 VKO-BUD 2014-08-30 2014-09-04 
+		 *FCO-TSR 2014-08-14 2014-08-22 BGY-PRG 2014-08-15 2014-08-22 VKO-BUD 2014-08-30 2014-09-04 
 		 */
 		Wrapper_gjsairw6001 instance = new Wrapper_gjsairw6001();
 		
 		FlightSearchParam p =new FlightSearchParam();
 		p.setWrapperid("gjdairw6001");
-		p.setDep("FCO");
-		p.setArr("TSR");
-		p.setDepDate("2014-08-14");
+		p.setDep("BGY");
+		p.setArr("PRG");
+		p.setDepDate("2014-08-15");
 		p.setRetDate("2014-08-22");
 		p.setTimeOut("60000");
 		String html=instance.getHtml(p);
@@ -226,70 +226,87 @@ public class Wrapper_gjsairw6001 implements QunarCrawler{
 						.trim();
 				String price = StringUtils.substringAfter(span_price,
 						"<span class=\"price\">").trim();
+				String d_date=depDate.substring(0, 10).replaceAll("(..)/(..)/(....)", "$3-$1-$2");
+				if(d_date.equals(param.getDepDate())){
+					FlightSegement seg = new FlightSegement();
+					flightNoList.add(code.substring(2));
+					seg.setFlightno(code.substring(2));
+					seg.setDepDate(depDate.substring(0, 10).replaceAll("(..)/(..)/(....)", "$3-$1-$2"));
+				    seg.setArrDate(arrDate.substring(0, 10).replaceAll("(..)/(..)/(....)", "$3-$1-$2"));
+					seg.setDepairport(array[11]);
+					seg.setArrairport(array[13]);
+					seg.setDeptime(depDate.substring(11));
+					seg.setArrtime(arrDate.substring(11));
+					seg.setCompany(array[7]);
+					segs.add(seg);
 
-				FlightSegement seg = new FlightSegement();
-				flightNoList.add(code.substring(2));
-				seg.setFlightno(code.substring(2));
-				seg.setDepDate(depDate.substring(0, 10).replaceAll("(..)/(..)/(....)", "$3-$1-$2"));
-			    seg.setArrDate(arrDate.substring(0, 10).replaceAll("(..)/(..)/(....)", "$3-$1-$2"));
-				seg.setDepairport(array[11]);
-				seg.setArrairport(array[13]);
-				seg.setDeptime(depDate.substring(11));
-				seg.setArrtime(arrDate.substring(11));
-				seg.setCompany(array[7]);
-				segs.add(seg);
-
+					
+					for (int j = 1; j < ret_results.length; j++) {
+					//截取返回航班信息
+						List<FlightSegement> re_segs = new ArrayList<FlightSegement>();
+						FlightSegement re_seg=new FlightSegement();
+						String ret_span = StringUtils
+						.substringBetween(
+								ret_results[j],
+								"name=\"ControlGroupRibbonSelectView$AvailabilityInputRibbonSelectView$Market2\"",
+								"requiredError").trim();
+						// 截取航班信息
+						String[] ret_array = ret_span.split("~");
+						String ret_code = ret_array[7] + ret_array[8];
+						String ret_depDate = ret_array[12];
+						String ret_dapDate1=ret_depDate.substring(0, 10).replaceAll("(..)/(..)/(....)", "$3-$1-$2");
+						if(ret_dapDate1.equals(param.getRetDate())){
+							String ret_arrDate = ret_array[14];
+							// 截取出票价信息
+							String ret_span_price = StringUtils.substringBetween(ret_results[j],
+									"<span class=\"flight-fare-nowizzclub\">", "</span>")
+									.trim();
+							String returnedPrice = StringUtils.substringAfter(ret_span_price,
+									"<span class=\"price\">").trim();
+							re_seg.setFlightno(ret_code.substring(2));
+							re_seg.setDepDate(ret_depDate.substring(0, 10).replaceAll("(..)/(..)/(....)", "$3-$1-$2"));
+						    re_seg.setArrDate(ret_arrDate.substring(0, 10).replaceAll("(..)/(..)/(....)", "$3-$1-$2"));
+							re_seg.setDepairport(ret_array[11]);
+							re_seg.setArrairport(ret_array[13]);
+							re_seg.setDeptime(ret_depDate.substring(11));
+							re_seg.setArrtime(ret_arrDate.substring(11));
+							re_seg.setCompany(ret_array[7]);
+							re_segs.add(re_seg);
+							List<String> retflightno =new ArrayList<String>();
+							retflightno.add(ret_code.substring(2));
+							RoundTripFlightInfo baseFlight = new RoundTripFlightInfo();
+							FlightDetail flightDetail = new FlightDetail();
+							flightDetail.setFlightno(flightNoList);
+							flightDetail.setMonetaryunit(currencyCode);
+							flightDetail.setDepcity(param.getDep());
+							flightDetail.setArrcity(param.getArr());
+							flightDetail.setWrapperid(param.getWrapperid());
+							flightDetail.setDepdate(String2Date(param.getDepDate()));
+							baseFlight.setInfo(segs);
+							flightDetail.setPrice(Double.parseDouble(price.substring(1))+Double.parseDouble(returnedPrice.substring(1)));
+							baseFlight.setDetail(flightDetail);
+							baseFlight.setOutboundPrice(Double.parseDouble(price.substring(1)));
+							baseFlight.setRetinfo(re_segs);
+							baseFlight.setRetdepdate(String2Date(param.getRetDate()));
+							baseFlight.setRetflightno(retflightno);
+						    baseFlight.setReturnedPrice(Double.parseDouble(returnedPrice.substring(1)));
+						    flightList.add(baseFlight);
+						}else{
+							continue;
+						}
+						
+				  }
+				}else{
+					  continue;
+				  }
 				
-				for (int j = 1; j < ret_results.length; j++) {
-				//截取返回航班信息
-					List<FlightSegement> re_segs = new ArrayList<FlightSegement>();
-					FlightSegement re_seg=new FlightSegement();
-					String ret_span = StringUtils
-					.substringBetween(
-							ret_results[j],
-							"name=\"ControlGroupRibbonSelectView$AvailabilityInputRibbonSelectView$Market2\"",
-							"requiredError").trim();
-					// 截取航班信息
-					String[] ret_array = ret_span.split("~");
-					String ret_code = ret_array[7] + ret_array[8];
-					String ret_depDate = ret_array[12];
-					String ret_arrDate = ret_array[14];
-					// 截取出票价信息
-					String ret_span_price = StringUtils.substringBetween(ret_results[j],
-							"<span class=\"flight-fare-nowizzclub\">", "</span>")
-							.trim();
-					String returnedPrice = StringUtils.substringAfter(ret_span_price,
-							"<span class=\"price\">").trim();
-					re_seg.setFlightno(ret_code.substring(2));
-					re_seg.setDepDate(ret_depDate.substring(0, 10).replaceAll("(..)/(..)/(....)", "$3-$1-$2"));
-				    re_seg.setArrDate(ret_arrDate.substring(0, 10).replaceAll("(..)/(..)/(....)", "$3-$1-$2"));
-					re_seg.setDepairport(ret_array[11]);
-					re_seg.setArrairport(ret_array[13]);
-					re_seg.setDeptime(ret_depDate.substring(11));
-					re_seg.setArrtime(ret_arrDate.substring(11));
-					re_seg.setCompany(ret_array[7]);
-					re_segs.add(re_seg);
-					List<String> retflightno =new ArrayList<String>();
-					retflightno.add(ret_code.substring(2));
-					RoundTripFlightInfo baseFlight = new RoundTripFlightInfo();
-					FlightDetail flightDetail = new FlightDetail();
-					flightDetail.setFlightno(flightNoList);
-					flightDetail.setMonetaryunit(currencyCode);
-					flightDetail.setDepcity(param.getDep());
-					flightDetail.setArrcity(param.getArr());
-					flightDetail.setWrapperid(param.getWrapperid());
-					flightDetail.setDepdate(String2Date(param.getDepDate()));
-					baseFlight.setInfo(segs);
-					flightDetail.setPrice(Double.parseDouble(price.substring(1))+Double.parseDouble(returnedPrice.substring(1)));
-					baseFlight.setDetail(flightDetail);
-					baseFlight.setOutboundPrice(Double.parseDouble(price.substring(1)));
-					baseFlight.setRetinfo(re_segs);
-					baseFlight.setRetdepdate(String2Date(param.getRetDate()));
-					baseFlight.setRetflightno(retflightno);
-				    baseFlight.setReturnedPrice(Double.parseDouble(returnedPrice.substring(1)));
-				    flightList.add(baseFlight);
-			  }
+				
 		    }
+			if(flightList.size()==0){
+				result.setRet(false);
+				result.setStatus(Constants.INVALID_DATE);
+				return result;	
+			}
 			result.setRet(true);
 			result.setStatus(Constants.SUCCESS);
 			result.setData(flightList);

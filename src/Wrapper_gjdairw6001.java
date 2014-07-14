@@ -1,4 +1,3 @@
-
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -10,10 +9,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.lang.StringUtils;
+
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
@@ -30,6 +31,7 @@ import com.qunar.qfwrapper.util.QFGetMethod;
 import com.qunar.qfwrapper.util.QFHttpClient;
 import com.qunar.qfwrapper.util.QFPostMethod;
 
+
 /**
  * 单程请求
  * @author xubc
@@ -41,15 +43,18 @@ public class Wrapper_gjdairw6001 implements QunarCrawler{
 		 * 测试条件 gjdairw6001
 		 * FCO-TSR 2014-08-14 BGY-PRG 2014-08-22 VKO-BUD 2014-08-30 
 	     */
-				
+
+
 		Wrapper_gjdairw6001 instance = new Wrapper_gjdairw6001();
-		
-		
+
+
+
+
 		FlightSearchParam p =new FlightSearchParam();
 		p.setWrapperid("gjdairw6001");
-		p.setDep("LTN");
-		p.setArr("KSC");
-		p.setDepDate("2014-06-28");
+		p.setDep("BGY");
+		p.setArr("PRG");
+		p.setDepDate("2014-08-22");
 		p.setTimeOut("60000");
 		String html=instance.getHtml(p);
 //		System.out.println(html);
@@ -72,11 +77,13 @@ public class Wrapper_gjdairw6001 implements QunarCrawler{
 		{
 			System.out.println(result.getStatus());
 		}
-			
+
+
 	}
 	@Override
 	public BookingResult getBookingInfo(FlightSearchParam param) {
-		
+
+
 		String bookingUrlPre = "http://wizzair.com/en-GB/Search";
 		BookingResult bookingResult = new BookingResult();
 		BookingInfo bookingInfo = new BookingInfo();
@@ -97,6 +104,7 @@ public class Wrapper_gjdairw6001 implements QunarCrawler{
 		bookingResult.setRet(true);
 		return bookingResult;
 	}
+
 
 	@Override
 	public String getHtml(FlightSearchParam param) {
@@ -160,6 +168,7 @@ public class Wrapper_gjdairw6001 implements QunarCrawler{
 		    } else {
 				return post.getResponseBodyAsString();
 
+
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -170,6 +179,7 @@ public class Wrapper_gjdairw6001 implements QunarCrawler{
 		}
 		return "Exception";
 	}
+
 
 	@Override
 	public  ProcessResultInfo process(String html, FlightSearchParam param) {
@@ -221,27 +231,40 @@ public class Wrapper_gjdairw6001 implements QunarCrawler{
 				String price = StringUtils.substringAfter(span_price,
 						"<span class=\"price\">").trim();
 
+
 				FlightSegement seg = new FlightSegement();
-				flightNoList.add(code.substring(2));
-				seg.setFlightno(code.substring(2));
-				seg.setDepDate(depDate.substring(0, 10).replaceAll("(..)/(..)/(....)", "$3-$1-$2"));
-			    seg.setArrDate(arrDate.substring(0, 10).replaceAll("(..)/(..)/(....)", "$3-$1-$2"));
-				seg.setCompany(array[7]);
-			    seg.setDepairport(array[11]);
-				seg.setArrairport(array[13]);
-				seg.setDeptime(depDate.substring(11));
-				seg.setArrtime(arrDate.substring(11));
-				segs.add(seg);
-				flightDetail.setFlightno(flightNoList);
-				flightDetail.setMonetaryunit(currencyCode);
-				flightDetail.setPrice(Double.parseDouble(price.substring(1)));
-				flightDetail.setDepcity(param.getDep());
-				flightDetail.setArrcity(param.getArr());
-				flightDetail.setWrapperid(param.getWrapperid());
-				flightDetail.setDepdate(String2Date(param.getDepDate()));
-				baseFlight.setDetail(flightDetail);
-				baseFlight.setInfo(segs);
-				flightList.add(baseFlight);
+				String d_date=depDate.substring(0, 10).replaceAll("(..)/(..)/(....)", "$3-$1-$2");
+				if(d_date.equals(param.getDepDate())){
+					flightNoList.add(code.substring(2));
+					seg.setFlightno(code.substring(2));
+					seg.setDepDate(d_date);
+				    seg.setArrDate(arrDate.substring(0, 10).replaceAll("(..)/(..)/(....)", "$3-$1-$2"));
+					seg.setCompany(array[7]);
+				    seg.setDepairport(array[11]);
+					seg.setArrairport(array[13]);
+					seg.setDeptime(depDate.substring(11));
+					seg.setArrtime(arrDate.substring(11));
+					segs.add(seg);
+					flightDetail.setFlightno(flightNoList);
+					flightDetail.setMonetaryunit(currencyCode);
+					flightDetail.setPrice(Double.parseDouble(price.substring(1)));
+					flightDetail.setDepcity(param.getDep());
+					flightDetail.setArrcity(param.getArr());
+					flightDetail.setWrapperid(param.getWrapperid());
+					flightDetail.setDepdate(String2Date(param.getDepDate()));
+					baseFlight.setDetail(flightDetail);
+					baseFlight.setInfo(segs);
+					flightList.add(baseFlight);
+				}
+				else{
+					continue;
+				}
+				
+			}
+			if(flightList.size()==0){
+				result.setRet(false);
+				result.setStatus(Constants.INVALID_DATE);
+				return result;	
 			}
 			result.setRet(true);
 			result.setStatus(Constants.SUCCESS);
@@ -259,8 +282,10 @@ public class Wrapper_gjdairw6001 implements QunarCrawler{
 	 * @param strdate
 	 * @return
 	 */
-	
-	
+
+
+
+
 	public static Date String2Date(String strdate){
 		DateFormat format = new SimpleDateFormat("yyyy-MM-dd");   
 		Date retuenDate =null;
@@ -271,6 +296,7 @@ public class Wrapper_gjdairw6001 implements QunarCrawler{
 			e.printStackTrace();
 		}
 		return retuenDate;
-		
+
+
 	}
 }

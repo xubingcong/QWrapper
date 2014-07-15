@@ -90,11 +90,14 @@ public class Wrapper_gjdairil001 implements QunarCrawler {
 
 	public BookingResult getBookingInfo(FlightSearchParam arg0) {
 
-		String bookingUrlPre = "http://montenegroairlines.com/en/home/amadeus/booking.html";
+		String bookingUrlPre = "http://montenegroairlines.com/en/home.html";
 		BookingResult bookingResult = new BookingResult();
-
+		BookingInfo bookingInfo = new BookingInfo();
+		bookingInfo.setAction(bookingUrlPre);
+		bookingInfo.setMethod("get");
+		bookingResult.setData(bookingInfo);
+		bookingResult.setRet(true);
 		return bookingResult;
-
 	}
 
 	public String getHtml(FlightSearchParam param) {

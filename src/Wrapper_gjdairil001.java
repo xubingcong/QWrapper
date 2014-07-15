@@ -1,3 +1,4 @@
+import com.qunar.qfwrapper.bean.booking.BookingInfo;
 import com.qunar.qfwrapper.bean.booking.BookingResult;
 import com.qunar.qfwrapper.bean.search.FlightSearchParam;
 import com.qunar.qfwrapper.bean.search.ProcessResultInfo;
@@ -98,6 +99,7 @@ public class Wrapper_gjdairil001 implements QunarCrawler {
 		bookingResult.setData(bookingInfo);
 		bookingResult.setRet(true);
 		return bookingResult;
+
 	}
 
 	public String getHtml(FlightSearchParam param) {

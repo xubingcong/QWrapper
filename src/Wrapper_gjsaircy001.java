@@ -35,7 +35,7 @@ import com.qunar.qfwrapper.util.QFHttpClient;
 import com.qunar.qfwrapper.util.QFPostMethod;
 
 /**
- * 单程请求
+ * 往返请求
  * 塞浦路斯航空
  * http://cyprusair.com/843,0,0,0,2-default.aspx
  * @author xubc
@@ -58,11 +58,11 @@ public class Wrapper_gjsaircy001 implements QunarCrawler{
  		
  		FlightSearchParam p =new FlightSearchParam();
  		p.setWrapperid("gjsaircy001");
- 		p.setDep("LCA");
- 		p.setArr("LON");
- 		p.setDepDate("2014-07-10");
- 		p.setRetDate("2014-07-17");;
- 		p.setTimeOut("1200000");
+ 		p.setDep("BEY");
+ 		p.setArr("SVO");
+ 		p.setDepDate("2014-09-12");
+ 		p.setRetDate("2014-09-20");;
+ 		p.setTimeOut("12000");
  		String html="";
  		try {
  			 html=instance.getHtml(p);
@@ -202,9 +202,7 @@ public class Wrapper_gjsaircy001 implements QunarCrawler{
 			String[] ou_results = ouFlightTable.split("<tr class=");
 			String[] in_results = inFlightTable.split("<tr class=");
 			for(int j=1;j<ou_results.length;j++){
-				RoundTripFlightInfo baseFlight = new RoundTripFlightInfo();
 				List<FlightSegement> segs = new ArrayList<FlightSegement>();
-				FlightDetail flightDetail = new FlightDetail();
 				List<String> flightNoList = new ArrayList<String>();
 				    //获取td中的票价信息,根据radio的可选状态获取第一个td票价，即为最低价
 			     String[] priceResults = ou_results[j].split(" <td class=\"price price");
@@ -246,11 +244,7 @@ public class Wrapper_gjsaircy001 implements QunarCrawler{
 					    segs.add(seg);
 					}
 			
-					flightDetail.setFlightno(flightNoList);
-					flightDetail.setDepcity(param.getDep());
-					flightDetail.setArrcity(param.getArr());
-					flightDetail.setWrapperid(param.getWrapperid());
-					flightDetail.setDepdate(String2Date(param.getDepDate()));
+			
 
      			 	 List<FlightSegement> re_segs = new ArrayList<FlightSegement>();
     			 	 List<String> retflightno = new ArrayList<String>();
@@ -291,15 +285,27 @@ public class Wrapper_gjsaircy001 implements QunarCrawler{
     							    re_segs.add(re_seg);
     							}  
   						       //获取返回的price_json串 
+    							RoundTripFlightInfo baseFlight = new RoundTripFlightInfo();
+    							FlightDetail flightDetail = new FlightDetail();
     							String in_priceResponse=this.resquestPostPrice(radio_id,in_radio_id);
     							JSONArray in_json = JSONObject.parseObject(in_priceResponse).getJSONArray("content");
     							JSONObject in_content=	in_json.getJSONObject(0).getJSONObject("model");
-    							JSONObject in_ero=in_content.getJSONObject("total").getJSONArray("priceAlternatives").getJSONObject(0).getJSONObject("pricesPerCurrency").getJSONObject("EUR");
+    						    JSONArray priceAlternatives=in_content.getJSONObject("total").getJSONArray("priceAlternatives");
+    						    if(priceAlternatives.toString().length()<3){
+    						    	 break;
+    						    }
+    						    JSONObject  pricesPerCurrency=priceAlternatives.getJSONObject(0).getJSONObject("pricesPerCurrency");
+    							JSONObject in_ero=pricesPerCurrency.getJSONObject("EUR");
     							//获取币种
     							String currencyCode=in_ero.getJSONObject("currency").getString("code");
     							String inTotalPrice=in_ero.getString("amount");
     							flightDetail.setMonetaryunit(currencyCode);
     					        flightDetail.setPrice(Double.parseDouble(inTotalPrice));
+    							flightDetail.setFlightno(flightNoList);
+    							flightDetail.setDepcity(param.getDep());
+    							flightDetail.setArrcity(param.getArr());
+    							flightDetail.setWrapperid(param.getWrapperid());
+    							flightDetail.setDepdate(String2Date(param.getDepDate()));
     					       baseFlight.setDetail(flightDetail);
     					       baseFlight.setRetdepdate(String2Date(param.getRetDate()));
     					       baseFlight.setRetinfo(re_segs);
